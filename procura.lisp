@@ -62,49 +62,51 @@
 ;; teste: (bfs (no-teste) 'no-solucaop 'sucessores (operadores) nil nil)
 ;; resultado: ((3 1) 1 ((2 2) 0 NIL))
 
-; (defun bfs (no objetivo sucessores operadores &optional abertos fechados)
-;   (cond
-;    ((and (null abertos) (null fechados)) (bfs no objetivo sucessores operadores (list no) nil))
-;    ((null abertos) nil)
-;    (t
-;     (let* ((n (car abertos))
-;            (sucessores-n (funcall sucessores n operadores))
-;            (m (no-objetivo objetivo sucessores-n)))
-;       (cond
-;        (m m)
-;        (t (bfs no objetivo sucessores operadores
-;                (abertos-bfs (cdr abertos) (nos-nao-repetidos sucessores-n (append (cdr abertos) fechados)))
-;                (append fechados (list n)))))))))
+(defun bfs (no objetivo sucessores operadores &optional abertos fechados (numero-nos-gerados 0) (numero-nos-expandidos 0))
+  "Algoritmo de procura em largura implementado recursivamente"
+  (cond
+   ((and (null abertos) (null fechados)) (bfs no objetivo sucessores operadores (list no) nil))
+   ((null abertos) nil)
+   (t
+    (let* ((n (car abertos))
+           (sucessores-n (funcall sucessores n operadores))
+           (m (no-objetivo objetivo sucessores-n)))
+      (cond
+       (m (criar-resultado m (+ numero-nos-gerados (length sucessores-n)) (1+ numero-nos-expandidos)))
+       (t (bfs no objetivo sucessores operadores
+               (abertos-bfs (cdr abertos) (nos-nao-repetidos sucessores-n (append (cdr abertos) fechados)))
+               (append fechados (list n)) (1+ numero-nos-gerados) (+ numero-nos-expandidos (length sucessores-n)))))))))
 
-(defun bfs (no objetivo sucessores operadores) 
-  (let (
-    (abertos (list no))
-    (fechados nil)
-    (numero-nos-gerados 0)
-    (numero-nos-expandidos 0)
-    (n nil)
-    (sucessores-n nil)
-    (sucessores-nao-repetidos nil)
-    (m nil))
-    (loop
-      (when (null abertos) (return (list
-                                      nil
-                                      (* (/ numero-nos-gerados numero-nos-expandidos) 1.0)
-                                      numero-nos-gerados
-                                      numero-nos-expandidos
-                                      (* (/ (no-profundidade m) numero-nos-gerados) 1.0))))
-      (setq n (car abertos))
-      (setq sucessores-n (funcall sucessores n operadores))
-      (setq numero-nos-expandidos (1+ numero-nos-expandidos))
-      (setq numero-nos-gerados (+ numero-nos-gerados (length sucessores-n)))
-      (setq sucessores-nao-repetidos (nos-nao-repetidos sucessores-n (append (cdr abertos) fechados)))
-      (setq m (no-objetivo objetivo sucessores-nao-repetidos))
-      (when m (return (criar-resultado m numero-nos-gerados numero-nos-expandidos)))
-      (setq abertos (abertos-bfs (cdr abertos) sucessores-nao-repetidos))
-      (setq fechados (append fechados (list n)))
-    )
-  )
-)
+; (defun bfs (no objetivo sucessores operadores)
+;   "Algoritmo de procura em largura implementado sequencialmente"
+;   (let (
+;     (abertos (list no))
+;     (fechados nil)
+;     (numero-nos-gerados 0)
+;     (numero-nos-expandidos 0)
+;     (n nil)
+;     (sucessores-n nil)
+;     (sucessores-nao-repetidos nil)
+;     (m nil))
+;     (loop
+;       (when (null abertos) (return (list
+;                                       nil
+;                                       (* (/ numero-nos-gerados numero-nos-expandidos) 1.0)
+;                                       numero-nos-gerados
+;                                       numero-nos-expandidos
+;                                       (* (/ (no-profundidade m) numero-nos-gerados) 1.0))))
+;       (setq n (car abertos))
+;       (setq sucessores-n (funcall sucessores n operadores))
+;       (setq numero-nos-expandidos (1+ numero-nos-expandidos))
+;       (setq numero-nos-gerados (+ numero-nos-gerados (length sucessores-n)))
+;       (setq sucessores-nao-repetidos (nos-nao-repetidos sucessores-n (append (cdr abertos) fechados)))
+;       (setq m (no-objetivo objetivo sucessores-nao-repetidos))
+;       (when m (return (criar-resultado m numero-nos-gerados numero-nos-expandidos)))
+;       (setq abertos (abertos-bfs (cdr abertos) sucessores-nao-repetidos))
+;       (setq fechados (append fechados (list n)))
+;     )
+;   )
+; )
 
 (defun criar-resultado (no numero-nos-gerados numero-nos-expandidos)
   (list 
