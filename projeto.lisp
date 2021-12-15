@@ -1,4 +1,4 @@
-(defun menu-inicial ()
+(defun mostrar-menu-inicial ()
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -12,7 +12,7 @@
 
 
 ;; Seleção do algoritmo
-(defun selecionar-algoritmo ()
+(defun mostrar-selecionar-algoritmo ()
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -29,7 +29,7 @@
    (format t " ~%                                       ")
    (format t " ~%-> Opção: ")))
 
-(defun selecionar-heuristica ()
+(defun mostrar-selecionar-heuristica ()
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -46,29 +46,38 @@
    (format t " ~%-> Opção: ")))
 
 ;; Iniciar o jogo
-(defun start ()
-  (progn (menu-inicial)
+(defun iniciar ()
+  (progn (mostrar-menu-inicial)
          (let ((option (read)))
            (cond
-            ((eq option '1) (start-alg))
+            ((eq option '1) (menu-algoritmo))
             ((eq option '0) (format t "Até à próxima!"))
-            (T (progn (format t "Opção inválida!") (start)))))))
+            (T (progn (format t "Opção inválida!") (iniciar)))))))
 
 ;; Corre os algoritmos
-(defun start-alg ()
-  (progn (selecionar-algoritmo)
+(defun menu-algoritmo (minimo-objetivo tabuleiro)
+  (progn (mostrar-selecionar-algoritmo)
          (let ((option (read)))
            (cond
             ((eq option '1)
-             ;BFS 
+             (efetuar-procura '(bfs )) 
             )
             ((eq option '2)
              ;DFS
             )
             ((eq option '3)
-             (start-heuristica))
-            ((eq option '0) (start))
-            (T (progn (format t "Opção inválida!") (start-alg)))))))
+             (menu-heuristica minimo-objetivo tabuleiro))
+            ((eq option '0) (iniciar))
+            (T (progn (format t "Opção inválida!") (menu-algoritmo)))))))
+
+(defun menu-heuristica (minimo-objetivo tabuleiro)
+  (progn (mostrar-selecionar-heuristica)
+         (let ((option (read)))
+           (cond
+            ((eq option '1) nil)
+            ((eq option '2) nil)
+            ((eq option '0) (format t "Até à próxima!"))
+            (T (progn (format t "Opção inválida!") (iniciar)))))))
 
 (defun efetuar-procura (fprocura)
   (let* ((tempo-inicio (tempo-atual))
@@ -147,14 +156,7 @@
     ) tabuleiro)
 )
 
-(defun start-heuristica ()
-  (progn (selecionar-heuristica)
-         (let ((option (read)))
-           (cond
-            ((eq option '1) nil)
-            ((eq option '2) nil)
-            ((eq option '0) (format t "Até à próxima!"))
-            (T (progn (format t "Opção inválida!") (start)))))))
+
 
 ;; Devolve o path para o ficheiro problemas.dat
 (defun diretorio-problemas ()
