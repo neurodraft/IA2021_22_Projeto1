@@ -45,23 +45,6 @@
 ;       (2 2 2 2 2 2 2 2 2 2 0 0 0 0))
 ; )
 
-; (defun tabuleiro-problema () 
-;     '(
-;       (0 0 0 0 0 0 2 2 2 2 2 2 2 2)
-;       (0 0 0 0 0 0 2 2 2 2 2 2 2 2)
-;       (0 0 0 0 0 0 2 2 2 2 2 2 2 2)
-;       (0 0 0 0 0 0 2 2 2 2 2 2 2 2)
-;       (0 0 0 0 0 0 2 2 2 2 2 2 2 2)
-;       (0 0 0 0 0 0 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
-; )
 
 ;; (defun tabuleiro-problema () 
 ;;     '(
@@ -579,6 +562,57 @@
         ((equal peca-jogada 'peca-a) (list (1- (first mao)) (second mao) (third mao)))
         ((equal peca-jogada 'peca-b) (list (first mao) (1- (second mao)) (third mao)))
         ((or (equal peca-jogada 'peca-c-h) (equal peca-jogada 'peca-c-v)) (list (first mao) (second mao) (1- (third mao))))
+    )
+)
+
+(defun mostrar-estados (nos profundidade)
+    (cond
+        ((null nos) nil)
+        ((/= (no-profundidade  (car nos)) profundidade) (mostrar-estados (cdr nos) profundidade))
+        (t (progn
+            (mostrar-tabuleiro (car (car (car nos))))
+            (terpri)
+            (mostrar-estados (cdr nos) profundidade)
+        ))
+    )
+)
+
+(defun mostrar-tabuleiro (tabuleiro)
+    (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))
+)
+
+(defun mostrar-solucao(no)
+    (cond 
+        ((null no) nil)
+        (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))
+    )
+)
+
+(defun mostrar-resultado(resultado)
+    (progn 
+        (mostrar-solucao (car resultado))
+        (mostrar-estatisticas (cdr resultado))
+    )
+
+)
+
+(defun mostrar-estatisticas (estatisticas)
+    (progn
+        (format t "Factor de ramificação média: ~a" (first estatisticas))
+        (terpri)
+        (format t "Número de nós gerados: ~a" (second estatisticas))
+        (terpri)
+        (format t "Número de nós expandidos: ~a" (third estatisticas))
+        (terpri)
+        (format t "Penetrância: ~a" (fourth estatisticas))
+    )
+)
+
+(defun mostrar-no (no)
+    (progn
+        (mostrar-tabuleiro (first (no-estado no)))
+        (format t "Peças disponiveis: ~a" (second (no-estado no)))
+        (terpri)
     )
 )
 
