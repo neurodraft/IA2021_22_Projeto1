@@ -8,12 +8,12 @@
     (format t " ~%|              0 - Sair               |")
     (format t " ~%|_____________________________________|")
     (format t " ~%                                       ")
-    (format t " ~%-> Opção: ")
+    (format t " ~%-> OpÃ§Ã£o: ")
    )
 )
 
 
-;; Seleção do algoritmo
+;; SeleÃ§Ã£o do algoritmo
 (defun selecionar-algoritmo ()
   (progn
    (format t " ~% _____________________________________")
@@ -29,7 +29,7 @@
    (format t " ~%|                                     |")
    (format t " ~%|_____________________________________|")
    (format t " ~%                                       ")
-   (format t " ~%-> Opção: ") 
+   (format t " ~%-> OpÃ§Ã£o: ") 
   )
 )
 
@@ -47,7 +47,7 @@
    (format t " ~%|                                     |")
    (format t " ~%|_____________________________________|")
    (format t " ~%                                       ")
-   (format t " ~%-> Opção: ") 
+   (format t " ~%-> OpÃ§Ã£o: ") 
   )
 )
 
@@ -57,8 +57,8 @@
     (let((option (read)))
       (cond
        ((eq option '1) (start-alg))
-       ((eq option '0) (format t "Até à próxima!"))
-       (T (progn (format t "Opção inválida!") (start)))
+       ((eq option '0) (format t "AtÃ© Ã  prÃ³xima!"))
+       (T (progn (format t "OpÃ§Ã£o invÃ¡lida!") (start)))
       )
      )
    )
@@ -79,7 +79,7 @@
 	(start-heuristica)
 	)
        ((eq option '0) (start))
-       (T (progn (format t "Opção inválida!") (start-alg)))
+       (T (progn (format t "OpÃ§Ã£o invÃ¡lida!") (start-alg)))
       )
     )
   )
@@ -92,8 +92,8 @@
       (cond
        ((eq option '1) nil)
        ((eq option '2) nil)
-       ((eq option '0) (format t "Até à próxima!"))
-       (T (progn (format t "Opção inválida!") (start)))
+       ((eq option '0) (format t "AtÃ© Ã  prÃ³xima!"))
+       (T (progn (format t "OpÃ§Ã£o invÃ¡lida!") (start)))
       )
      )
    )
@@ -121,7 +121,7 @@
       (format t " ~%|                                     |")
       (format t " ~%|_____________________________________|")
       (format t " ~%                                       ")
-      (format t " ~%-> Opção: ")
+      (format t " ~%-> OpÃ§Ã£o: ")
     )
     (progn
       (cond 
@@ -147,15 +147,15 @@
        ((eq option '0) (funcall menu))
        ((not (numberp option))
         (progn 
-          (format t "Insira uma opção válida")
+          (format t "Insira uma opÃ§Ã£o vÃ¡lida")
           (select-tabuleiro menu)
          ))
        (T (let ((lista-tabuleiros (ler-tabuleiros)))
             (cond
-             ((eq option 0) (format t "Até à próxima!"))
+             ((eq option 0) (format t "AtÃ© Ã  prÃ³xima!"))
              (t (if (or (> option (length lista-tabuleiros)(< option 0)))
                     (progn 
-                      (format t "Insira uma opção válida")
+                      (format t "Insira uma opÃ§Ã£o vÃ¡lida")
                       (select-tabuleiro menu)
                     )
                  (list option (nth(1- option) lista-tabuleiros))
@@ -181,13 +181,13 @@
       (progn 
         (format file "~%* ------------------------- *") 
         (format file "~%~t> Algoritmo escolhido: ~a " alg)  
-        (format file "~%~t> Hora de Início: ~a:~a:~a" (car tempo-inicial) (car(cdr tempo-inicial)) (car(cdr(cdr tempo-inicial)))) 
+        (format file "~%~t> Hora de InÃ­cio: ~a:~a:~a" (car tempo-inicial) (car(cdr tempo-inicial)) (car(cdr(cdr tempo-inicial)))) 
         (format file "~%~t> Hora de Fim: ~a:~a:~a" (car tempo-fim) (car(cdr tempo-fim)) (car(cdr(cdr tempo-fim)))) 
-        (format file "~%~t> Número de nós gerados: ~a" (+ (car(cdr alg-solucao)) (car(cdr(cdr alg-solucao))))) 
-        (format file "~%~t> Número de nós expandidos: ~a" (car(cdr(cdr alg-solucao)))) 
-        (format file "~%~t> Profundidade máxima: ~a" moves) 
+        (format file "~%~t> NÃºmero de nÃ³s gerados: ~a" (+ (car(cdr alg-solucao)) (car(cdr(cdr alg-solucao))))) 
+        (format file "~%~t> NÃºmero de nÃ³s expandidos: ~a" (car(cdr(cdr alg-solucao)))) 
+        (format file "~%~t> Profundidade mÃ¡xima: ~a" moves) 
         (format file "~%~t> Objetivo pretendido: ~a" goal) 
-        (format file "~%~t> Penetrância: ~F" (penetrancia alg-solucao)) 
+        (format file "~%~t> PenetrÃ¢ncia: ~F" (penetrancia alg-solucao)) 
         (format file "~%~t> Pontos totais: ~a" (no-g (car alg-solucao))) 
         (display-jogadas (car alg-solucao) (car(cdr alg-solucao)) (car(cdr(cdr alg-solucao)))) 
         )) 

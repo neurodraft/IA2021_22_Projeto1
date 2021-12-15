@@ -582,58 +582,6 @@
     )
 )
 
-(defun mostrar-estados (nos profundidade)
-    (cond
-        ((null nos) nil)
-        ((/= (no-profundidade  (car nos)) profundidade) (mostrar-estados (cdr nos) profundidade))
-        (t (progn
-            (mostrar-tabuleiro (car (car (car nos))))
-            (terpri)
-            (mostrar-estados (cdr nos) profundidade)
-        ))
-    )
-)
-
-(defun mostrar-tabuleiro (tabuleiro)
-    (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))
-)
-
-(defun mostrar-solucao(no)
-    (cond 
-        ((null no) nil)
-        (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))
-    )
-)
-
-(defun mostrar-resultado(resultado)
-    (progn 
-        (mostrar-solucao (car resultado))
-        (mostrar-estatisticas (cdr resultado))
-    )
-
-)
-
-(defun mostrar-estatisticas (estatisticas)
-    (progn
-        (format t "Factor de ramificação média: ~a" (first estatisticas))
-        (terpri)
-        (format t "Número de nós gerados: ~a" (second estatisticas))
-        (terpri)
-        (format t "Número de nós expandidos: ~a" (third estatisticas))
-        (terpri)
-        (format t "Penetrância: ~a" (fourth estatisticas))
-    )
-)
-
-(defun mostrar-no (no)
-    (progn
-        (mostrar-tabuleiro (first (no-estado no)))
-        (terpri)
-        (format t "Peças disponiveis: ~a" (second (no-estado no)))
-        (terpri)
-    )
-)
-
 (defun tabuleiro-letras (tabuleiro)
     (mapcar (lambda (row)
         (mapcar (lambda (cel) 

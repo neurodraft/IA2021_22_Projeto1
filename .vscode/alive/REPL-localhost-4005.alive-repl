@@ -1,0 +1,35 @@
+
+CL-USER> (+ 1 1)
+(+ 1 1)
+2
+
+CL-USER> (- '(1 2 3) '(3 4 5))
+(- '(1 2 3) '(3 4 5))
+CL-USER> 
+
+
+(+ 1 1)
+2
+
+CL-USER> (difer)
+(difer)
+; in: DIFER
+;     (DIFER)
+; 
+; caught STYLE-WARNING:
+;   undefined function: COMMON-LISP-USER::DIFER
+; 
+; compilation unit finished
+;   Undefined function:
+;     DIFER
+;   caught 1 STYLE-WARNING condition
+
+(diferenca-tempo '(14 34 10) '(14 35 10))
+(diferenca-tempo '(14 34 10) '(14 38 23))
+60
+
+CL-USER> 
+(diferenca-tempo '(14 34 10) '(14 38 23))
+253
+
+CL-USER> 
