@@ -1,19 +1,19 @@
 ;;; Metodos seletores
 
 (defun no-estado (no)
-  "Obtem o estado do nÃ³"
+  "Obtem o estado do nó"
   (car no))
 ;; teste: (no-estado (no-teste))
 ;; resultado: (2 2)
 
 (defun no-profundidade (no)
-  "Obtem a profundidade do nÃ³"
+  "Obtem a profundidade do nó"
   (car (cdr no)))
 ;; teste: (no-profundidade (no-teste))
 ;; resultado: 0
 
 (defun no-pai (no)
-  "Obtem a profundidade do nÃ³"
+  "Obtem a profundidade do nó"
   (car (cdr (cdr no))))
 ;; teste: (no-pai (no-teste))
 ;; resultado: NIL
@@ -25,22 +25,22 @@
 
 
 (defun abertos-bfs (abertos sucessores)
-  "MÃ©todo BFS de inserÃ§Ã£o dos sucessores na lista de abertos"
+  "Método BFS de inserção dos sucessores na lista de abertos"
   (append abertos sucessores))
 
 (defun abertos-dfs (abertos sucessores)
-  "MÃ©todo DFS de inserÃ§Ã£o dos sucessores na lista de abertos"
+  "Método DFS de inserção dos sucessores na lista de abertos"
   (append sucessores abertos))
 
 (defun no-objetivo (objetivo lista)
-  "Procura por um nÃ³ soluÃ§Ã£o numa lista e devolve"
+  "Procura por um nó solução numa lista e devolve"
   (cond
    ((null lista) nil)
    ((funcall objetivo (car lista)) (car lista))
    (t (no-objetivo objetivo (cdr lista)))))
 
 (defun no-repetido (no lista)
-  "Verifica se um no com o mesmo estado existe numa lista e devolve a lista comeÃ§ando nesse no"
+  "Verifica se um no com o mesmo estado existe numa lista e devolve a lista começando nesse no"
   (member no lista :test (lambda (a b) (and (equal (no-estado a) (no-estado b))))))
 
 
@@ -198,7 +198,7 @@
 
 
 (defun insere (e p L)
-    "insere um elemento e na posiÃ§Ã£o p de uma lista"
+    "insere um elemento e na posição p de uma lista"
     (cond
         ((zerop p) (append (list e) L))
         ((null L) nil)
@@ -207,7 +207,7 @@
 )
 
 (defun procura-binaria (n L-ord &optional baixo alto)
-  "devolve a posiÃ§Ã£o numa lista ordenada (L-ord) em que n (valor numerico) deve ser colocado"
+  "devolve a posição numa lista ordenada (L-ord) em que n (valor numerico) deve ser colocado"
     (cond
         ((or (null baixo) (null alto)) (procura-binaria n L-ord 0 (1- (length L-ord))))
         ((< alto baixo) baixo)
@@ -224,7 +224,7 @@
 )
 
 (defun remove-from-list (l index &optional (i 0))
-  "remove da lista l o elemento de indice index, devolvendo uma lista de dimensÃ£o (1- (length l))"
+  "remove da lista l o elemento de indice index, devolvendo uma lista de dimensão (1- (length l))"
   (cond 
       ((= i index) (cdr l))
       (t (cons (car l) (remove-from-list (cdr l) index (1+ i))))
@@ -322,15 +322,15 @@
 ; )
 
 (defun avaliar-nos (nos heuristica)
-  "Devolve uma lista de avaliaÃ§Ãµes f com base numa lista de nos e uma funcao heuristica
-  em que g(n) Ã© a profundidade do no"
+  "Devolve uma lista de avaliações f com base numa lista de nos e uma funcao heuristica
+  em que g(n) é a profundidade do no"
   (mapcar (lambda (no) (+ (no-profundidade no) (funcall heuristica (no-estado no)))) nos)
 )
 
 (defun a*-menor-custo (abertos f-abertos &optional (menor-no nil) (menor-f nil) (index nil) (i 0))
   "Recebendo uma lista de nos abertos e uma lista de custos f correspondente
-  devolve uma lista com o primeiro nÃ³ de custo mais baixo, o seu custo f e a
-  sua posiÃ§Ã£o nas listas"
+  devolve uma lista com o primeiro nó de custo mais baixo, o seu custo f e a
+  sua posição nas listas"
   (cond
     ((and (null menor-f) (null menor-no) (null index)) (a*-menor-custo (cdr abertos) (cdr f-abertos) (car abertos) (car f-abertos) i (1+ i)))
     ((null abertos) (list menor-no menor-f index))

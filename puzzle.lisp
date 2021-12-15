@@ -46,33 +46,15 @@
 ; )
 
 
-;; (defun tabuleiro-problema () 
-;;     '(
-;;       (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-;;       (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-;;       (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-;;       (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-;;       (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-;;       (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-;;       (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
-;; )
-
 (defun tabuleiro-problema () 
     '(
-      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
+      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
+      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
+      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
+      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
+      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
+      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
@@ -81,6 +63,24 @@
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
 )
+
+; (defun tabuleiro-problema () 
+;     '(
+;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
+; )
 
 ;; (defun tabuleiro-problema () 
 ;;     '(
@@ -157,20 +157,20 @@
 
 
 (defun no-teste ()
-  "Define um no teste de Blockus em que o tabuleiro Ã© vazio, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
+  "Define um no teste de Blockus em que o tabuleiro é vazio, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
   (list (list (tabuleiro-teste) '(10 10 15)) 0 nil))
 
 (defun no-problema ()
-  "Define um no teste de Blockus em que o tabuleiro Ã© um problema, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
+  "Define um no teste de Blockus em que o tabuleiro é um problema, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
   (list (list (tabuleiro-problema) '(10 10 15)) 0 nil))
 
 (defun no-vazio ()
-  "Define um no teste de Blockus em que o tabuleiro Ã© vazio, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
+  "Define um no teste de Blockus em que o tabuleiro é vazio, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
   (list (list (tabuleiro-vazio) '(10 10 15)) 0 nil))
 
 (defun obter-vizinhanca (tabuleiro x y)
-    "Obtem uma matriz 3x3 que representa a vizinhanÃ§a de uma cÃ©lula no tabuleiro
-    Representa espaÃ§os fora do tabuleiro com o valor -1"
+    "Obtem uma matriz 3x3 que representa a vizinhança de uma célula no tabuleiro
+    Representa espaços fora do tabuleiro com o valor -1"
     (labels (
         (recursive (tabuleiro i)
             (cond 
@@ -223,8 +223,8 @@
 )
 
 (defun espacos-validos (tabuleiro)
-    "Procura espaÃ§os validos para jogar no tabuleiro
-    Devolve lista de listas com par de coordenadas e lista de direÃ§Ãµes diagonais de contacto
+    "Procura espaços validos para jogar no tabuleiro
+    Devolve lista de listas com par de coordenadas e lista de direções diagonais de contacto
     (sup-esq, sup-dir, inf-esq, inf-dir)"
     (labels
         (
@@ -288,9 +288,9 @@
 )
 
 (defun peca-c-h ()
-    "PeÃ§a C horizontal descrita como uma matriz 3x2 e uma lista de 4 deslocaÃ§Ãµes
-    cada deslocaÃ§Ã£o Ã© descrita com uma lista de direcÃµes diagonais de contato e um offset em x e y
-    da forma da peÃ§a relativamente a posicao no tabuleiro"
+    "Peça C horizontal descrita como uma matriz 3x2 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
     '(
         (
             (0 1 1)
@@ -306,9 +306,9 @@
 )
 
 (defun peca-c-v ()
-    "PeÃ§a C vertical descrita como uma matriz 2x3 e uma lista de 4 deslocaÃ§Ãµes
-    cada deslocaÃ§Ã£o Ã© descrita com uma lista de direcÃµes diagonais de contato e um offset em x e y
-    da forma da peÃ§a relativamente a posicao no tabuleiro"
+    "Peça C vertical descrita como uma matriz 2x3 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
     '(
         (
             (1 0)
@@ -325,9 +325,9 @@
 )
 
 (defun peca-a ()
-    "PeÃ§a A descrita como uma matriz 1x1 e uma lista de 1 deslocaÃ§Ãµes
-    cada deslocaÃ§Ã£o Ã© descrita com uma lista de direcÃµes diagonais de contato e um offset em x e y
-    da forma da peÃ§a relativamente a posicao no tabuleiro"
+    "Peça A descrita como uma matriz 1x1 e uma lista de 1 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
     '(
         (
             (1)
@@ -339,9 +339,9 @@
 )
 
 (defun peca-b ()
-    "PeÃ§a A descrita como uma matriz 1x1 e uma lista de 4 deslocaÃ§Ãµes
-    cada deslocaÃ§Ã£o Ã© descrita com uma lista de direcÃµes diagonais de contato e um offset em x e y
-    da forma da peÃ§a relativamente a posicao no tabuleiro"
+    "Peça A descrita como uma matriz 1x1 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
     '(
         (
             (1 1)
@@ -582,7 +582,7 @@
 ;;; Funcoes auxiliares da procura
 ;;; predicado no-solucaop que verifica se um estado e final
 (defun no-solucaop (no minimo-casas-preenchidas)
-  "Determina se um nÃ³ Ã© soluÃ§Ã£o"
+  "Determina se um nó é solução"
   (cond
     ((>= (contar-casas-preenchidas (first (no-estado no))) minimo-casas-preenchidas)
         (cond
