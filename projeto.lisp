@@ -139,9 +139,9 @@
     (mapcar (lambda (row)
         (mapcar (lambda (cel) 
             (cond
-                ((= cel 2) '?)
-                ((= cel 1) '?)
-                (t '_)
+                ((= cel 2) ":")
+                ((= cel 1) "#")
+                (t "_")
             )
         ) row)
     ) tabuleiro)
