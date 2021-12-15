@@ -45,116 +45,126 @@
    (format t " ~%                                       ")
    (format t " ~%-> Opção: ")))
 
+
+(defun mostrar-limite-profundidade ()
+  (progn
+   (format t " ~% _____________________________________")
+   (format t " ~%|                                     |")
+   (format t " ~%|           JOGO DO BLOKUS            |")
+   (format t " ~%|                                     |")
+   (format t " ~%|    Qual o limite de profundidade    |")
+   (format t " ~%|                                     |")
+   (format t " ~%|     > 0 - nível de profundidade     |")
+   (format t " ~%|       0 - Voltar                    |")
+   (format t " ~%|                                     |")
+   (format t " ~%|_____________________________________|")
+   (format t " ~%                                       ")
+   (format t " ~%-> Opção: ")))
+
+
+(defun menu-limite-profundidade(minimo-casas-preencher tabuleiro)
+  (progn (mostrar-limite-profundidade)
+    (let ((option (read)))
+      (cond
+        ((or (not (numberp option)) (< option 0)) (format t "Opção inválida!") (menu-limite-profundidade minimo-casas-preencher tabuleiro))
+        ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro ))
+        (T (efetuar-procura 'dfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher) option))
+      )
+    )
+  )
+)   
+
 ;; Iniciar o jogo
 (defun iniciar ()
   (progn (mostrar-menu-inicial)
          (let ((option (read)))
            (cond
-            ((eq option '1) (menu-algoritmo))
+            ((eq option '1) (menu-tabuleiros))
             ((eq option '0) (format t "Até à próxima!"))
             (T (progn (format t "Opção inválida!") (iniciar)))))))
 
 ;; Corre os algoritmos
-(defun menu-algoritmo (minimo-objetivo tabuleiro)
+(defun menu-algoritmo (minimo-casas-preencher tabuleiro)
   (progn (mostrar-selecionar-algoritmo)
          (let ((option (read)))
            (cond
             ((eq option '1)
-             (efetuar-procura '(bfs )) 
-            )
+             (efetuar-procura 'bfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher)))
             ((eq option '2)
-             ;DFS
+             (menu-limite-profundidade minimo-casas-preencher tabuleiro)
             )
             ((eq option '3)
-             (menu-heuristica minimo-objetivo tabuleiro))
-            ((eq option '0) (iniciar))
-            (T (progn (format t "Opção inválida!") (menu-algoritmo)))))))
+             (menu-heuristica tabuleiro minimo-casas-preencher))
+            ((eq option '0) (menu-tabuleiros))
+            (T (progn (format t "Opção inválida!") (menu-algoritmo minimo-casas-preencher tabuleiro)))))))
 
-(defun menu-heuristica (minimo-objetivo tabuleiro)
+(defun menu-heuristica (tabuleiro minimo-casas-preencher)
   (progn (mostrar-selecionar-heuristica)
          (let ((option (read)))
            (cond
-            ((eq option '1) nil)
-            ((eq option '2) nil)
-            ((eq option '0) (format t "Até à próxima!"))
+            ((eq option '1) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil (criar-funcao-heuristica-base minimo-casas-preencher)))
+            ((eq option '2) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil 'heuristica-original2))
+            ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
             (T (progn (format t "Opção inválida!") (iniciar)))))))
 
-(defun efetuar-procura (fprocura)
+(defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
   (let* ((tempo-inicio (tempo-atual))
-         (resultado (eval fprocura))
+         (resultado (eval algoritmo))
          (tempo-final (tempo-atual))
          (tempo-total (- tempo-final)))
     (progn)))
 
 (defun diferenca-tempo (tempo-inicial tempo-final)
   (let* ((tempo-inicial-segundos (+ (* (first tempo-inicial) 3600) (* (second tempo-inicial) 60) (third tempo-inicial)))
-    (tempo-final-segundos (+ (* (first tempo-final) 3600) (* (second tempo-final) 60) (third tempo-final))))
-  (- tempo-final-segundos tempo-inicial-segundos))
-)
+         (tempo-final-segundos (+ (* (first tempo-final) 3600) (* (second tempo-final) 60) (third tempo-final))))
+    (- tempo-final-segundos tempo-inicial-segundos)))
 
 (defun mostrar-estados (nos profundidade)
-    (cond
-        ((null nos) nil)
-        ((/= (no-profundidade  (car nos)) profundidade) (mostrar-estados (cdr nos) profundidade))
-        (t (progn
-            (mostrar-tabuleiro (car (car (car nos))))
-            (terpri)
-            (mostrar-estados (cdr nos) profundidade)
-        ))
-    )
-)
+  (cond
+   ((null nos) nil)
+   ((/= (no-profundidade (car nos)) profundidade) (mostrar-estados (cdr nos) profundidade))
+   (t (progn
+       (mostrar-tabuleiro (car (car (car nos))))
+       (terpri)
+       (mostrar-estados (cdr nos) profundidade)))))
 
 (defun mostrar-tabuleiro (tabuleiro)
-    (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))
-)
+  (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro)))
 
-(defun mostrar-solucao(no)
-    (cond 
-        ((null no) nil)
-        (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))
-    )
-)
+(defun mostrar-solucao (no)
+  (cond
+   ((null no) nil)
+   (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))))
 
-(defun mostrar-resultado(resultado)
-    (progn 
-        (mostrar-solucao (car resultado))
-        (mostrar-estatisticas (cdr resultado))
-    )
-
-)
+(defun mostrar-resultado (resultado)
+  (progn
+   (mostrar-solucao (car resultado))
+   (mostrar-estatisticas (cdr resultado))))
 
 (defun mostrar-estatisticas (estatisticas)
-    (progn
-        (format t "Factor de ramificação média: ~a" (first estatisticas))
-        (terpri)
-        (format t "Número de nós gerados: ~a" (second estatisticas))
-        (terpri)
-        (format t "Número de nós expandidos: ~a" (third estatisticas))
-        (terpri)
-        (format t "Penetrância: ~a" (fourth estatisticas))
-    )
-)
+  (progn
+   (format t "Factor de ramificação média: ~a" (first estatisticas))
+   (terpri)
+   (format t "Número de nós gerados: ~a" (second estatisticas))
+   (terpri)
+   (format t "Número de nós expandidos: ~a" (third estatisticas))
+   (terpri)
+   (format t "Penetrância: ~a" (fourth estatisticas))))
 
 (defun mostrar-no (no)
-    (progn
-        (mostrar-tabuleiro (first (no-estado no)))
-        (format t "Peças disponiveis: ~a" (second (no-estado no)))
-        (terpri)
-        (terpri)
-    )
-)
+  (progn
+   (mostrar-tabuleiro (first (no-estado no)))
+   (format t "Peças disponiveis: ~a" (second (no-estado no)))
+   (terpri)
+   (terpri)))
 
 (defun tabuleiro-letras (tabuleiro)
-    (mapcar (lambda (row)
-        (mapcar (lambda (cel) 
-            (cond
-                ((= cel 2) ":")
-                ((= cel 1) "#")
-                (t "_")
-            )
-        ) row)
-    ) tabuleiro)
-)
+  (mapcar (lambda (row)
+            (mapcar (lambda (cel)
+                      (cond
+                       ((= cel 2) ":")
+                       ((= cel 1) "#")
+                       (t "_"))) row)) tabuleiro))
 
 
 
@@ -163,14 +173,17 @@
   (make-pathname :host "c" :directory '(:absolute "lisp") :name "problemas" :type "dat"))
 
 ;; Retorna os tabuleiros do ficheiro problemas.dat
+; (defun ler-tabuleiros ()
+;   (with-open-file (file (diretorio-problemas) :if-does-not-exist nil)
+;     (do ((result nil (cons next result)) (next (read file nil 'eof) (read file nil 'eof)))
+;       ((equal next 'eof) (reverse result)))))
+
 (defun ler-tabuleiros ()
-  (with-open-file (file (diretorio-problemas) :if-does-not-exist nil)
-    (do ((result nil (cons next result)) (next (read file nil 'eof) (read file nil 'eof)))
-      ((equal next 'eof) (reverse result)))))
+  '((8 ((0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (20 ((0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (28 ((0 0 2 0 0 0 0 0 0 2 2 2 2 2) (0 0 0 2 0 0 0 0 0 2 2 2 2 2) (0 0 0 0 2 0 0 0 0 2 2 2 2 2) (0 0 0 0 0 2 0 0 0 2 2 2 2 2) (0 0 0 0 0 0 2 0 0 2 2 2 2 2) (0 0 0 0 0 0 0 2 0 2 2 2 2 2) (0 0 0 0 0 0 0 0 2 2 2 2 2 2) (0 0 0 0 0 0 0 0 0 2 2 2 2 2) (0 0 0 0 0 0 0 0 0 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (36 ((0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (44 ((0 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 0 2 0 0 0 0 0 0 2 0 0 0 2) (2 0 0 2 0 0 0 0 0 0 2 0 0 2) (2 0 0 0 2 0 0 0 0 0 0 2 0 2) (2 0 0 0 0 2 0 0 0 0 0 0 2 2) (2 0 0 0 0 0 2 0 0 0 0 0 0 2) (2 0 0 0 0 0 0 2 0 0 0 0 0 2) (2 0 0 0 0 0 0 0 2 0 0 0 0 2) (2 0 0 0 0 0 0 0 0 2 0 0 0 2) (2 0 2 0 0 0 0 0 0 0 2 0 0 2) (2 2 0 0 0 0 0 0 0 0 0 2 0 2) (2 0 0 0 2 0 0 0 0 0 0 0 2 2) (2 0 0 0 0 2 0 0 0 0 0 0 0 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (72 ((0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0)))))
 
 ;; Mostra o menu com os tabuleiros 
-(defun menu-tabuleiro (&optional (i 1) (problemas (ler-tabuleiros)))
-  (if (null problemas)
+(defun mostrar-tabuleiros (numero-tabuleiros &optional (i 1))
+  (if (zerop numero-tabuleiros)
       (progn
        (format t " ~%|         0 - Voltar                  |")
        (format t " ~%|                                     |")
@@ -187,26 +200,21 @@
           (format t " ~%|                                     |")
           (format t " ~%|         Escolha o tabuleiro:        |")
           (format t " ~%|                                     |"))) (t nil))
-       (format t " ~%|         ~a : tabuleiro ~a           |" i i)
-       (menu-tabuleiro (+ i 1) (cdr problemas)))))
+       (format t " ~%|         ~a : Tabuleiro ~a             |" i i)
+       (mostrar-tabuleiros (1- numero-tabuleiros) (+ i 1)))))
 
-(defun select-tabuleiro (menu)
-  (progn (menu-tabuleiro)
-         (let ((option (read)))
-           (cond
-            ((eq option '0) (funcall menu))
-            ((not (numberp option))
-             (progn
-              (format t "Insira uma opção válida")
-              (select-tabuleiro menu)))
-            (T (let ((lista-tabuleiros (ler-tabuleiros)))
-                 (cond
-                  ((eq option 0) (format t "Até à próxima!"))
-                  (t (if (or (> option (length lista-tabuleiros) (< option 0)))
-                         (progn
-                          (format t "Insira uma opção válida")
-                          (select-tabuleiro menu))
-                         (list option (nth (1- option) lista-tabuleiros)))))))))))
+(defun menu-tabuleiros ()
+  (let ((problemas (ler-tabuleiros)))
+    (progn (mostrar-tabuleiros (length problemas))
+           (let ((option (read)))
+             (cond
+              ((eq option '0) (iniciar))
+              ((or (not (numberp option)) (> option (length problemas)))
+               (progn
+                (format t "Insira uma opção válida")
+                (menu-tabuleiros)))
+              (T (let ((problema (nth option problemas)))
+                   (menu-algoritmo (first problema) (second problema)))))))))
 
 (defun directory-resultados-file ()
   (make-pathname :host "c" :directory '(:absolute "lisp") :name "resultados" :type "dat"))
