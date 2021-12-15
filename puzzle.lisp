@@ -575,8 +575,8 @@
 
 
 ;;; Construtor
-(defun cria-no (estado &optional (g 0) (pai nil))
-  (list estado g pai))
+(defun criar-no-inicial-blockus (tabuleiro)
+  (list (list tabuleiro '(10 10 15)) 0 nil))
 
 
 ;;; Funcoes auxiliares da procura
@@ -640,8 +640,6 @@
         (recursivo 0 0)
     )
 )
-
-
 
 (defun contar-casas-preenchidas (tabuleiro) 
     (cond 
