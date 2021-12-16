@@ -1,11 +1,3 @@
-;; Utils
-
-(defun eliminar-duplicados (L)
-  (cond ((null L) L)
-        ((member (car L) (cdr L) :test #'equal)
-         (eliminar-duplicados (cdr L)))
-        (t (cons (car L) (eliminar-duplicados (cdr L))))))
-
 ;;; Blockus
 ;;; variaveis de teste e operadores
 
@@ -27,34 +19,15 @@
       (0 0 0 0 0 0 0 0 0 0 0 0 0 0))
 )
 
-; (defun tabuleiro-problema () 
-;     '(
-;       (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
-;       (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
-;       (0 0 0 0 0 0 2 2 2 2 2 2 2 2)
-;       (0 0 0 0 0 0 2 2 2 2 2 2 2 2)
-;       (2 2 0 0 0 0 0 0 2 2 2 2 2 2)
-;       (2 2 0 0 0 0 0 0 2 2 2 2 2 2)
-;       (2 2 2 2 0 0 0 0 0 0 2 2 2 2)
-;       (2 2 2 2 0 0 0 0 0 0 2 2 2 2)
-;       (2 2 2 2 2 2 0 0 0 0 0 0 2 2)
-;       (2 2 2 2 2 2 0 0 0 0 0 0 2 2)
-;       (2 2 2 2 2 2 2 2 0 0 0 0 0 0)
-;       (2 2 2 2 2 2 2 2 0 0 0 0 0 0)
-;       (2 2 2 2 2 2 2 2 2 2 0 0 0 0)
-;       (2 2 2 2 2 2 2 2 2 2 0 0 0 0))
-; )
-
-
 (defun tabuleiro-problema () 
     '(
-      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
-      (0 0 0 0 0 0 0 2 2 2 2 2 2 2)
+      (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
+      (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
+      (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
+      (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
@@ -63,78 +36,6 @@
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
 )
-
-; (defun tabuleiro-problema () 
-;     '(
-;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-;       (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
-; )
-
-;; (defun tabuleiro-problema () 
-;;     '(
-;;       (0 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 0 2 0 0 0 0 0 0 2 0 0 0 2)
-;;       (2 0 0 2 0 0 0 0 0 0 2 0 0 2)
-;;       (2 0 0 0 2 0 0 0 0 0 0 2 0 2)
-;;       (2 0 0 0 0 2 0 0 0 0 0 0 2 2)
-;;       (2 0 0 0 0 0 2 0 0 0 0 0 0 2)
-;;       (2 0 0 0 0 0 0 2 0 0 0 0 0 2)
-;;       (2 0 0 0 0 0 0 0 2 0 0 0 0 2)
-;;       (2 0 0 0 0 0 0 0 0 2 0 0 0 2)
-;;       (2 0 2 0 0 0 0 0 0 0 2 0 0 2)
-;;       (2 2 0 0 0 0 0 0 0 0 0 2 0 2)
-;;       (2 0 0 2 0 0 0 0 0 0 0 0 2 2)
-;;       (2 0 0 0 2 0 0 0 0 0 0 0 0 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
-;; )
-
-;; (defun tabuleiro-problema () 
-;;     '(
-;;       (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
-;;       (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
-;;       (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
-;;       (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
-;; )
-
-; (defun tabuleiro-problema () 
-;     '(
-;       (0 0 2 0 0 0 0 0 0 2 2 2 2 2)
-;       (0 0 0 2 0 0 0 0 0 2 2 2 2 2)
-;       (0 0 0 0 2 0 0 0 0 2 2 2 2 2)
-;       (0 0 0 0 0 2 0 0 0 2 2 2 2 2)
-;       (0 0 0 0 0 0 2 0 0 2 2 2 2 2)
-;       (0 0 0 0 0 0 0 2 0 2 2 2 2 2)
-;       (0 0 0 0 0 0 0 0 2 2 2 2 2 2)
-;       (0 0 0 0 0 0 0 0 0 2 2 2 2 2)
-;       (0 0 0 0 0 0 0 0 0 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
-;       (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
-; )
 
 (defun tabuleiro-teste () 
     '(
@@ -154,19 +55,93 @@
       (0 0 0 0 0 0 0 0 0 0 0 0 0 0))
 )
 
-
-
 (defun no-teste ()
   "Define um no teste de Blockus em que o tabuleiro é vazio, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
   (list (list (tabuleiro-teste) '(10 10 15)) 0 nil))
 
 (defun no-problema ()
-  "Define um no teste de Blockus em que o tabuleiro é um problema, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
+  "Define um no teste de Blockus em que o tabuleiro é o primeiro problema, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
   (list (list (tabuleiro-problema) '(10 10 15)) 0 nil))
 
 (defun no-vazio ()
   "Define um no teste de Blockus em que o tabuleiro é vazio, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
   (list (list (tabuleiro-vazio) '(10 10 15)) 0 nil))
+
+(defun peca-c-h ()
+    "Peça C horizontal descrita como uma matriz 3x2 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
+    '(
+        (
+            (0 1 1)
+            (1 1 0)
+        )
+        (
+            ((sup-esq) (-1 0))
+            ((sup-dir inf-dir) (-2 0))
+            ((inf-dir) (-1 -1))
+            ((inf-esq sup-esq) (0 -1))
+        )
+    )
+)
+
+(defun peca-c-v ()
+    "Peça C vertical descrita como uma matriz 2x3 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
+    '(
+        (
+            (1 0)
+            (1 1)
+            (0 1)
+        )
+        (
+            ((sup-dir) (-1 -1))
+            ((inf-dir inf-esq) (-1 -2))
+            ((inf-esq) (0 -1))
+            ((sup-esq sup-dir) (0 0))
+        )
+    )
+)
+
+(defun peca-a ()
+    "Peça A descrita como uma matriz 1x1 e uma lista de 1 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
+    '(
+        (
+            (1)
+        )
+        (
+            ((sup-dir inf-dir inf-esq sup-esq) (0 0))
+        )
+    )
+)
+
+(defun peca-b ()
+    "Peça A descrita como uma matriz 1x1 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
+    '(
+        (
+            (1 1)
+            (1 1)
+        )
+        (
+            ((sup-dir) (-1 0))
+            ((inf-dir) (-1 -1))
+            ((inf-esq) (0 -1))
+            ((sup-esq) (0 0))
+        )
+    )
+)
+
+(defun operadores ()
+    "Devolve os simbolos relativos às 4 peças concretas do jogo"
+    (list 'peca-a  'peca-b 'peca-c-h 'peca-c-v)
+)
+
+;;; Métodos auxiliares
 
 (defun obter-vizinhanca (tabuleiro x y)
     "Obtem uma matriz 3x3 que representa a vizinhança de uma célula no tabuleiro
@@ -240,6 +215,8 @@
                                 (let*
                                     (
                                         (vizinhanca (obter-vizinhanca tabuleiro x y))
+                                        ;; Verificar se não existem peças colocadas nas laterais
+                                        ;; e existe pelo menos uma peça nas diagonais
                                         (decisao (and 
                                             (not (or 
                                                 (= (second (first vizinhanca)) 1)
@@ -279,6 +256,7 @@
 )
 
 (defun tabuleiro-vaziop (tabuleiro)
+    "Função que avlia se um tabuleiro fornecido não tem peças colocadas"
     (cond
         ((null tabuleiro) t)
         ((listp (car tabuleiro)) (and (tabuleiro-vaziop (car tabuleiro)) (tabuleiro-vaziop (cdr tabuleiro))))
@@ -287,85 +265,21 @@
     )
 )
 
-(defun peca-c-h ()
-    "Peça C horizontal descrita como uma matriz 3x2 e uma lista de 4 deslocações
-    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
-    da forma da peça relativamente a posicao no tabuleiro"
-    '(
-        (
-            (0 1 1)
-            (1 1 0)
-        )
-        (
-            ((sup-esq) (-1 0))
-            ((sup-dir inf-dir) (-2 0))
-            ((inf-dir) (-1 -1))
-            ((inf-esq sup-esq) (0 -1))
-        )
-    )
-)
-
-(defun peca-c-v ()
-    "Peça C vertical descrita como uma matriz 2x3 e uma lista de 4 deslocações
-    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
-    da forma da peça relativamente a posicao no tabuleiro"
-    '(
-        (
-            (1 0)
-            (1 1)
-            (0 1)
-        )
-        (
-            ((sup-dir) (-1 -1))
-            ((inf-dir inf-esq) (-1 -2))
-            ((inf-esq) (0 -1))
-            ((sup-esq sup-dir) (0 0))
-        )
-    )
-)
-
-(defun peca-a ()
-    "Peça A descrita como uma matriz 1x1 e uma lista de 1 deslocações
-    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
-    da forma da peça relativamente a posicao no tabuleiro"
-    '(
-        (
-            (1)
-        )
-        (
-            ((sup-dir inf-dir inf-esq sup-esq) (0 0))
-        )
-    )
-)
-
-(defun peca-b ()
-    "Peça A descrita como uma matriz 1x1 e uma lista de 4 deslocações
-    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
-    da forma da peça relativamente a posicao no tabuleiro"
-    '(
-        (
-            (1 1)
-            (1 1)
-        )
-        (
-            ((sup-dir) (-1 0))
-            ((inf-dir) (-1 -1))
-            ((inf-esq) (0 -1))
-            ((sup-esq) (0 0))
-        )
-    )
-)
-
-(defun operadores ()
-    (list 'peca-a  'peca-b 'peca-c-h 'peca-c-v)
-)
-
-
 (defun deslocacoes-peca (peca)
+    "Obtem a lista de deslocações (offsets) da peça relativamente aos pontos de contacto"
     (car (cdr peca))
 )
 
+(defun eliminar-duplicados (L)
+    "Elimina elementos duplicados numa lista L"
+  (cond ((null L) L)
+        ((member (car L) (cdr L) :test #'equal)
+         (eliminar-duplicados (cdr L)))
+        (t (cons (car L) (eliminar-duplicados (cdr L))))))
+
 (defun potenciais-colocacoes-com-peca ( posicoes peca)
+    "Obtem uma lista de potenciais colocações da peça no tabuleiro
+    que deve ainda ser testada na prática"
     (eliminar-duplicados (apply #'append (mapcar (lambda (posicao)
              (remove nil (potenciais-colocacoes  posicao (deslocacoes-peca peca)))
         )
@@ -373,6 +287,8 @@
 )
 
 (defun potenciais-colocacoes (posicao deslocacoes)
+    "Devolve a resolução em colocações concretas da peça ao comparar a lista de deslocacoes da peça
+    com os contatos da posicao recebida."
     (cond
         ((null deslocacoes) nil)
         ((lista-contem-todos (first (car deslocacoes)) (second posicao)) (let 
@@ -390,6 +306,7 @@
 )
 
 (defun lista-contem-todos (lista elementos)
+    "Verifica se a lista recebida contém todos os elementos"
     (cond
         ((null elementos) t)
         ((member (car elementos) lista) (and t (lista-contem-todos  lista (cdr elementos))))
@@ -398,6 +315,9 @@
 )
 
 (defun potenciais-colocacoes-por-peca (estado operadores)
+    "Obtém todas as potenciais colocações por peça no tabuleiro considerando as peças restantes na mão.
+    Todas as colocações devolvidas devem primeiro ser testadas em prática.
+    Devolve lista de listas com operador e uma lista de potencias colocações em listas de coordenas x y."
     (let
         (
             (posicoes-validas (espacos-validos (first estado)))
@@ -413,6 +333,7 @@
 )
 
 (defun tem-peca (peca mao)
+    "Valida se uma peça existe na mão do jogador"
     (cond
         ((equal peca 'peca-a) (> (first mao) 0))
         ((equal peca 'peca-b) (> (second mao) 0))
@@ -423,6 +344,8 @@
 
 
 (defun peca-casas-ocupadas (x y peca)
+    "Retorna uma lista de listas de coordenas que são as casa ocupadas concretamente de jogar
+    a peça nas posições x y"
   (labels
     (
       (recursivo (matriz-peca i j)
@@ -442,25 +365,12 @@
   )
 )
 
-(defun linha (idx tabuleiro)
-  (nth idx tabuleiro))
-
-(defun coluna (idx tabuleiro)
-  (labels ((coluna-rec ( row )
-              (cond ((null (nth row tabuleiro)) nil)
-                    (t (cons (nth idx (nth row tabuleiro)) (coluna-rec (1+ row)))))))
-    (coluna-rec 0)))
-
 (defun celula (row col tabuleiro)
+    "Retorna uma celula na linha e coluna do tabuleiro"
   (nth col (nth row tabuleiro)))
 
-(defun casa-vaziap (col row tabuleiro)
-  (and (< row 14) (< col 14) (= (celula row col tabuleiro) 0)))
-
-(defun verifica-casas-vazias (tabuleiro pairs)
-  (mapcar (lambda (pair) (apply #'casa-vaziap (append pair (list tabuleiro)))) pairs))
-
 (defun substituir-posicao (idx line &optional (value 1))
+    "Substitui a célula na posição idx da linha recebida pelo valor"
   (labels ((recursive (current)
               (cond ((null (nth current line)) nil)
                     ((= current idx) (cons value (recursive (1+ current))))
@@ -469,6 +379,7 @@
 )
 
 (defun substituir (row col tabuleiro &optional (value 1))
+    "Substitui a célula na posição row col recebida pelo valor"
   (labels ((recursive (current)
               (cond ((null (nth current tabuleiro)) nil)
                     ((= current row) (cons (substituir-posicao col (nth current tabuleiro) value) (recursive (1+ current))))
@@ -477,6 +388,7 @@
 )
 
 (defun valida-casas (tabuleiro casas)
+    "Valida se é possível jogar no tabuleiro nas casas"
     (cond
         ((null casas) t)
         ((or (> (first (car casas)) 13) (> (second (car casas)) 13)
@@ -500,6 +412,7 @@
 )
 
 (defun list-0-to-n (n)
+    "Devolve uma lista de 0 a n"
     (cond 
         ((< n 0) nil)
         (t (append (list-0-to-n (1- n)) (list n))) 
@@ -507,6 +420,7 @@
 )
 
 (defun remove-from-list (l index &optional (i 0))
+  "Remove da lista l o elemento de indice index, devolvendo uma lista de dimensão (1- (length l))"
     (cond 
         ((= i index) (cdr l))
         (t (cons (car l) (remove-from-list (cdr l) index (1+ i))))
@@ -514,6 +428,7 @@
 )
 
 (defun shuffle-list (l &optional (shuffled-list nil) (indexes nil) (init nil))
+    "Baralha a lista l aleatóriamente"
     (cond
         ((null init) (shuffle-list l shuffled-list (list-0-to-n (1- (length l))) t ))
         ((null indexes) shuffled-list)
@@ -528,6 +443,7 @@
 )
 
 (defun sucessores (no operadores)
+    "Com base no nó e nos operadores disponíveis, devolve uma lista de sucessores válidos"
     (shuffle-list (apply #'append (mapcar (lambda (peca-colocacoes)  
         (remove nil (mapcar (lambda (colocacao)
             (let ((casas-ocupadas (peca-casas-ocupadas (first colocacao) (second colocacao) (funcall (first peca-colocacoes)))))
@@ -547,6 +463,7 @@
 )
 
 (defun ha-jogadas-validas (no)
+    "Verifica se é possível colocar mais alguma peça das disponiveis no tabuleiro"
     (eval (cons 'or  (apply #'append (mapcar (lambda (peca-colocacoes)  
         (mapcar (lambda (colocacao)
             (let ((casas-ocupadas (peca-casas-ocupadas (first colocacao) (second colocacao) (funcall (first peca-colocacoes)))))
@@ -558,6 +475,7 @@
 )
 
 (defun atualizar-mao (mao peca-jogada)
+    "Devolve uma nova mão sem a peça jogada"
     (cond
         ((equal peca-jogada 'peca-a) (list (1- (first mao)) (second mao) (third mao)))
         ((equal peca-jogada 'peca-b) (list (first mao) (1- (second mao)) (third mao)))
@@ -567,6 +485,7 @@
 
 
 (defun ocupar-casas (tabuleiro casas)
+    "Imprime a peça sobre o tabuleiro, devolvendo um novo tabuleiro"
     (cond
         ((null casas) tabuleiro)
         (t (ocupar-casas (substituir (second (car casas)) (first (car casas)) tabuleiro 1) (cdr casas)))
@@ -574,13 +493,17 @@
 )
 
 
-;;; Construtor
+;;; Construtores
+
 (defun criar-no-inicial-blockus (tabuleiro)
+    "Recebe um tabuleiro/problema e constroi um nó inicial com uma mão de 35 peças de 3 tipos, profundidade 0
+    e pai nil"
   (list (list tabuleiro '(10 10 15)) 0 nil))
 
 
 ;;; Funcoes auxiliares da procura
-;;; predicado no-solucaop que verifica se um estado e final
+
+
 (defun no-solucaop (no minimo-casas-preenchidas)
   "Determina se um nó é solução"
   (cond
@@ -594,30 +517,29 @@
 )
 
 (defun criar-funcao-objetivo (minimo-casas-preenchidas)
+    "Constroi e devolve uma função lambda objetivo. Permite variar o número minimo de casas preenchidas."
     (lambda (no) (funcall #'no-solucaop no minimo-casas-preenchidas))
 )
 
 (defun criar-funcao-heuristica-base (minimo-casas-a-preencher)
+    "Constroi e devolve uma função lambda heuristica base. Permite variar o número minimo de casas preenchidas."
     (lambda (estado) (funcall #'heuristica-base estado minimo-casas-a-preencher))
 )
 
-(defun criar-funcao-heuristica-original (minimo-casas-a-preencher)
-    (lambda (estado) (funcall #'heuristica-original estado minimo-casas-a-preencher))
-)
-
 (defun heuristica-base (estado minimo-casas-a-preencher)
+    "Função heuristica base definida como o numero de casas restantes para alcançar o minimo de casas
+    preenchidas especificadas pelo problema"
     (- minimo-casas-a-preencher (contar-casas-preenchidas (first estado)))
 )
 
-(defun heuristica-original (estado minimo-casas-a-preencher)
-    (+ (- minimo-casas-a-preencher (contar-casas-preenchidas (first estado))) (contar-casas-vazias-nao-sozinhas (first estado)))
-)
-
-(defun heuristica-original2 (estado)
+(defun heuristica-original (estado)
+    "Função heuristica original definida como o numero de casas vazias que conectam lateralmente com
+    outras casas vazias"
     (contar-casas-vazias-nao-sozinhas (first estado))
 )
 
-(defun contar-casas-vazias-nao-sozinhas (tabuleiro) 
+(defun contar-casas-vazias-nao-sozinhas (tabuleiro)
+    "Devolve o numero de casas no tabuleiro vazias que conectam lateralmente com outras casas vazias"
     (labels
         ((recursivo (x y) 
             (cond
@@ -641,7 +563,8 @@
     )
 )
 
-(defun contar-casas-preenchidas (tabuleiro) 
+(defun contar-casas-preenchidas (tabuleiro)
+    "Devolve o numro de casas preenchidas pelo jogador no tabuleiro"
     (cond 
         ((null tabuleiro) 0)
         ((listp (car tabuleiro)) (+ (contar-casas-preenchidas (car tabuleiro))
@@ -654,7 +577,3 @@
         )
     )
 )
-
-
-;; teste: (no-solucaop (no-teste))
-;; resultado: NIL

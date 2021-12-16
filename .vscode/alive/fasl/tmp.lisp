@@ -1,390 +1,301 @@
-;;; Metodos seletores
+(defun mostrar-menu-inicial ()
+  (progn
+   (format t " ~% _____________________________________")
+   (format t " ~%|                                     |")
+   (format t " ~%|           JOGO DO BLOKUS            |")
+   (format t " ~%|                                     |")
+   (format t " ~%|              1 - Jogar              |")
+   (format t " ~%|              0 - Sair               |")
+   (format t " ~%|_____________________________________|")
+   (format t " ~%                                       ")
+   (format t " ~%-> Opção: ")))
 
-(defun no-estado (no)
-  "Obtem o estado do nó"
-  (car no))
 
-(defun no-profundidade (no)
-  "Obtem a profundidade do nó"
-  (car (cdr no)))
+;; Seleção do algoritmo
+(defun mostrar-selecionar-algoritmo ()
+  (progn
+   (format t " ~% _____________________________________")
+   (format t " ~%|                                     |")
+   (format t " ~%|           JOGO DO BLOKUS            |")
+   (format t " ~%|                                     |")
+   (format t " ~%|       Escolha o algoritmo:          |")
+   (format t " ~%|                                     |")
+   (format t " ~%|       1 - Breadth-First Search      |")
+   (format t " ~%|       2 - Depth-First Search        |")
+   (format t " ~%|       3 - A*                        |")
+   (format t " ~%|       0 - Voltar                    |")
+   (format t " ~%|                                     |")
+   (format t " ~%|_____________________________________|")
+   (format t " ~%                                       ")
+   (format t " ~%-> Opção: ")))
 
-(defun no-pai (no)
-  "Obtem a profundidade do nó"
-  (car (cdr (cdr no))))
+(defun mostrar-selecionar-heuristica ()
+  (progn
+   (format t " ~% _____________________________________")
+   (format t " ~%|                                     |")
+   (format t " ~%|           JOGO DO BLOKUS            |")
+   (format t " ~%|                                     |")
+   (format t " ~%|       Escolha a heuristica          |")
+   (format t " ~%|                                     |")
+   (format t " ~%|       1 - Heuristica base           |")
+   (format t " ~%|       2 - Heuristica original       |")
+   (format t " ~%|       0 - Voltar                    |")
+   (format t " ~%|                                     |")
+   (format t " ~%|_____________________________________|")
+   (format t " ~%                                       ")
+   (format t " ~%-> Opção: ")))
 
-;;; Métodos auxiliares de procura
+(defun mostrar-limite-profundidade ()
+  (progn
+   (format t " ~% _____________________________________")
+   (format t " ~%|                                     |")
+   (format t " ~%|           JOGO DO BLOKUS            |")
+   (format t " ~%|                                     |")
+   (format t " ~%|    Qual o limite de profundidade    |")
+   (format t " ~%|                                     |")
+   (format t " ~%|     > 0 - nível de profundidade     |")
+   (format t " ~%|       0 - Voltar                    |")
+   (format t " ~%|                                     |")
+   (format t " ~%|_____________________________________|")
+   (format t " ~%                                       ")
+   (format t " ~%-> Opção: ")))
 
-(defun no-objetivo-em-lista (objetivo lista)
-  "Procura por um nó solução numa lista e devolve"
+(defun definir-pasta ()
+  (progn
+   (format t "Escreva o path da localizacao do projeto entre aspas~%")
+   (format t "Exemplo: ''C:/Users/username/Desktop/''~%")
+   (let ((path (read)))
+     (load (compile-file (concatenate 'string path "puzzle.lisp")))
+     (load (compile-file (concatenate 'string path "procura.lisp")))
+     (defparameter *path* path)
+     path)))
+
+(defun menu-limite-profundidade (minimo-casas-preencher tabuleiro)
+  (progn (mostrar-limite-profundidade)
+         (let ((option (read)))
+           (cond
+            ((or (not (numberp option)) (< option 0)) (format t "Opção inválida!") (menu-limite-profundidade minimo-casas-preencher tabuleiro))
+            ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
+            (T (efetuar-procura 'dfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher) option))))))
+
+;; Iniciar o jogo
+(defun iniciar ()
+  (progn
+   (definir-pasta)
+   (mostrar-menu-inicial)
+   (let ((option (read)))
+     (cond
+      ((eq option '1) (menu-tabuleiros))
+      ((eq option '0) (format t "Até à próxima!"))
+      (T (progn (format t "Opção inválida!") (iniciar)))))))
+
+;; Corre os algoritmos
+(defun menu-algoritmo (minimo-casas-preencher tabuleiro)
+  (progn (mostrar-selecionar-algoritmo)
+         (let ((option (read)))
+           (cond
+            ((eq option '1)
+             (efetuar-procura 'bfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher)))
+            ((eq option '2)
+             (menu-limite-profundidade minimo-casas-preencher tabuleiro))
+            ((eq option '3)
+             (menu-heuristica tabuleiro minimo-casas-preencher))
+            ((eq option '0) (menu-tabuleiros))
+            (T (progn (format t "Opção inválida!") (menu-algoritmo minimo-casas-preencher tabuleiro)))))))
+
+(defun menu-heuristica (tabuleiro minimo-casas-preencher)
+  (progn (mostrar-selecionar-heuristica)
+         (let ((option (read)))
+           (cond
+            ((eq option '1) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil (criar-funcao-heuristica-base minimo-casas-preencher)))
+            ((eq option '2) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil 'heuristica-original2))
+            ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
+            (T (progn (format t "Opção inválida!") (iniciar)))))))
+
+(defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
+  (let* ((tempo-inicio (tempo-atual))
+         (no (criar-no-inicial-blockus tabuleiro))
+         (resultado (cond
+                     ((eq algoritmo 'bfs) (bfs no objetivo 'sucessores (operadores)))
+                     ((eq algoritmo 'dfs) (dfs no objetivo 'sucessores (operadores) profundidade-maxima))
+                     ((eq algoritmo 'a*) (a* no objetivo 'sucessores (operadores) funcao-heuristica))))
+         (tempo-final (tempo-atual))
+         (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
+    (progn
+     (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
+     (registar-resultado resultado tempo-total algoritmo profundidade-maxima)
+     (iniciar))))
+
+(defun registar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
+  (progn
+   (registar-algoritmo algoritmo profundidade-maxima)
+   (registar-solucao (car resultado))
+   (registar-estatisticas (cdr resultado) tempo-total)))
+
+(defun registar-algoritmo (algoritmo &optional profundida-maxima)
+  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
   (cond
-   ((null lista) nil)
-   ((funcall objetivo (car lista)) (car lista))
-   (t (no-objetivo-em-lista objetivo (cdr lista)))))
+   ((equal algoritmo 'dfs)
+    (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
+   (t (format file "Algoritmo utilizado: ~a ~%" algoritmo)))))
 
-(defun no-repetido (no lista)
-  "Verifica se um no com o mesmo estado existe numa lista e devolve a lista começando nesse no"
-  (member no lista :test (lambda (a b) (and (equal (no-estado a) (no-estado b))))))
-
-(defun indice-elemento-lista (no lista &optional (i 0))
-  "Obtém a posição de um elemento numa lista ou nil caso não exista"
+(defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
   (cond
-   ((null (car lista)) nil)
-   ((equal no (car lista)) i)
-   (t (indice-no-lista no (cdr lista) (1+ i)))))
+   ((equal algoritmo 'dfs)
+    (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
+   (t (format t "Algoritmo utilizado: ~a ~%" algoritmo))))
 
-(defun criar-resultado (no numero-nos-gerados numero-nos-expandidos)
-  "Função para criar a lista com os resultados finais de uma procura
-  (no objetivo, fator de ramificação média, numero de nós gerados, número de nós expandidos e penetrância"
-  (list
-   no
-   (* (/ numero-nos-gerados numero-nos-expandidos) 1.0)
-   numero-nos-gerados
-   numero-nos-expandidos
-   (* (/ (no-profundidade no) numero-nos-gerados) 1.0)))
-
-;;; BFS
-
-(defun abertos-bfs (abertos sucessores)
-  "Método BFS de inserção dos sucessores na lista de abertos"
-  (append abertos sucessores))
-
-(defun nos-nao-repetidos (nos lista)
-  "Devolve a lista de nos sem os com estado igual na lista fornecida"
-  (remove nil (mapcar (lambda (no)
-                        (cond
-                         ((no-repetido no lista) nil)
-                         (t no))) nos)))
-
-
-(defun bfs (no objetivo sucessores operadores &optional abertos fechados (numero-nos-gerados 0) (numero-nos-expandidos 0))
-  "Algoritmo de procura em largura implementado recursivamente
-  Recebe um nó inicial, uma função de avaliação de nó objetivo,
-  uma função geradoradora de nós sucessores e uma lista de operadores fornecidos a esta
-  
-  Um nó é definido como uma lista composta por estado, profundidade e nó pai.
-  A função objetivo deverá receber exclusivamente um nó.
-  A função sucessores deverá receber exclusivamente um nó e uma lista de operadores"
+(defun registar-solucao (no)
   (cond
-   ((and (null abertos) (null fechados)) (bfs no objetivo sucessores operadores (list no) nil))
-   ((null abertos) nil)
-   (t
-    (let* ((n (car abertos))
-           (sucessores-n (funcall sucessores n operadores))
-           (m (no-objetivo-em-lista objetivo sucessores-n)))
-      (cond
-       (m (criar-resultado m (+ numero-nos-gerados (length sucessores-n)) (1+ numero-nos-expandidos)))
-       (t (bfs no objetivo sucessores operadores
-               (abertos-bfs (cdr abertos) (nos-nao-repetidos sucessores-n (append (cdr abertos) fechados)))
-               (append fechados (list n)) (1+ numero-nos-gerados) (+ numero-nos-expandidos (length sucessores-n)))))))))
+   ((null no) nil)
+   (t (progn (registar-solucao (no-pai no)) (registar-no no)))))
 
-; (defun bfs (no objetivo sucessores operadores)
-;   "Algoritmo de procura em largura implementado sequencialmente
-    ; Recebe um nó inicial, uma função de avaliação de nó objetivo,
-    ; uma função geradoradora de nós sucessores e uma lista de operadores fornecidos a esta
-    
-    ; Um nó é definido como uma lista composta por estado, profundidade e nó pai.
-    ; A função objetivo deverá receber exclusivamente um nó.
-    ; A função sucessores deverá receber exclusivamente um nó e uma lista de operadores"
-;   (let (
-;     (abertos (list no))
-;     (fechados nil)
-;     (numero-nos-gerados 0)
-;     (numero-nos-expandidos 0)
-;     (n nil)
-;     (sucessores-n nil)
-;     (sucessores-nao-repetidos nil)
-;     (m nil))
-;     (loop
-;       (when (null abertos) (return (list
-;                                       nil
-;                                       (* (/ numero-nos-gerados numero-nos-expandidos) 1.0)
-;                                       numero-nos-gerados
-;                                       numero-nos-expandidos
-;                                       (* (/ (no-profundidade m) numero-nos-gerados) 1.0))))
-;       (setq n (car abertos))
-;       (setq sucessores-n (funcall sucessores n operadores))
-;       (setq numero-nos-expandidos (1+ numero-nos-expandidos))
-;       (setq numero-nos-gerados (+ numero-nos-gerados (length sucessores-n)))
-;       (setq sucessores-nao-repetidos (nos-nao-repetidos sucessores-n (append (cdr abertos) fechados)))
-;       (setq m (no-objetivo-em-lista objetivo sucessores-nao-repetidos))
-;       (when m (return (criar-resultado m numero-nos-gerados numero-nos-expandidos)))
-;       (setq abertos (abertos-bfs (cdr abertos) sucessores-nao-repetidos))
-;       (setq fechados (append fechados (list n)))
-;     )
-;   )
-; )
+(defun registar-tabuleiro (tabuleiro)
+  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
+    (format file "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))))
 
+(defun registar-no (no)
+  (progn
+   (registar-tabuleiro (first (no-estado no)))
+   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
+     (format file "Peças disponiveis: ~a ~% ~%" (second (no-estado no))))))
 
-;; Utils DFS
+(defun registar-estatisticas (estatisticas tempo-total)
+  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
+    (progn
+     (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
+     (format file "Factor de ramificação média: ~a ~%" (first estatisticas))
+     (format file "Número de nós gerados: ~a ~%" (second estatisticas))
+     (format file "Número de nós expandidos: ~a ~%" (third estatisticas))
+     (format file "Penetrância: ~a ~%" (fourth estatisticas))
+     (format file "Tempo de execução em segundos: ~a ~%" tempo-total)
+     (format file "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%"))))
 
-(defun abertos-dfs (abertos sucessores)
-  "Método DFS de inserção dos sucessores na lista de abertos"
-  (append sucessores abertos))
+(defun diferenca-tempo (tempo-inicial tempo-final)
+  (let* ((tempo-inicial-segundos (+ (* (first tempo-inicial) 3600) (* (second tempo-inicial) 60) (third tempo-inicial)))
+         (tempo-final-segundos (+ (* (first tempo-final) 3600) (* (second tempo-final) 60) (third tempo-final))))
+    (- tempo-final-segundos tempo-inicial-segundos)))
 
-(defun remover-subarvore (raiz lista)
-  "Dada um nó raiz e uma lista de nós, remove todos os nós dessa lista
-  pertencentes à sub-arvore, incluindo a raiz"
-  (labels ((pertence-a-subarvore (no)
-              (cond
-               ((null no) nil)
-               ((equal (no-pai no) raiz) t)
-               (t (pertence-a-subarvore (no-pai no))))))
-    (cond
-     ((null (car lista)) nil)
-     ((or (equal (car lista) raiz) (pertence-a-subarvore (car lista))) (cons nil (remover-subarvore raiz (cdr lista))))
-     (t (cons (car lista) (remover-subarvore raiz (cdr lista)))))))
+(defun mostrar-tabuleiro (tabuleiro)
+  (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro)))
 
-(defun remover-subarvores (a-remover lista)
-  "Remove múltiplas subarvores fornecidos como uma lista de nós raiz e uma lista de nós
-  "
+(defun mostrar-solucao (no)
   (cond
-   ((null (car a-remover)) lista)
-   (t (remover-subarvores (cdr a-remover) (remove nil (remover-subarvore (car a-remover) lista))))))
+   ((null no) nil)
+   (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))))
 
-(defun dfs-adicionar-sucessores (sucessores fechados abertos)
-  "Função que implementa o método de inserção de sucessores no algoritmo DFS
-    devolve uma lista com a nova lista de nós abertos e a nova lista de nós fechados
-  Recebe uma lista de nós sucessores, fechados e abertos e:
-    1. Discarta sucessores que se encontram repetidos na lista de abertos;
-    2. Procura por sucessores com estado repetido na lista de fechados e:
-      - caso o sucessor tenha menor profundidade (custo uniforme),remove toda a subarvore
-        do no fechado da lista de fechados e introduz o sucessor na lista de abertos
-      - caso contrário é discartado
-    3. Coloca os restantes sucessores em abertos"
+(defun mostrar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
+  (progn
+   (mostrar-algoritmo algoritmo profundidade-maxima)
+   (mostrar-solucao (car resultado))
+   (mostrar-estatisticas (cdr resultado) tempo-total)))
 
-  (let* ((sucessores-nao-abertos (remove nil (mapcar (lambda (n)
-                                                       (cond
-                                                        ((no-repetido n abertos) nil)
-                                                        (t n))) sucessores)))
-         (sucessores-repetidos-fechados (mapcar (lambda (n)
-                                                  (let ((fechado-repetido (car (no-repetido n fechados))))
-                                                    (cond
-                                                     ((null fechado-repetido) (list 'manter n nil))
-                                                     ((> (no-profundidade fechado-repetido) (no-profundidade n)) (list 'substituir n fechado-repetido))
-                                                     (t (list 'discartar n fechado-repetido))))) sucessores-nao-abertos))
-         (sucessores-validos (remove nil (mapcar (lambda (r)
-                                                   (cond
-                                                    ((or (equal 'manter (first r)) (equal 'substituir (first r))) (second r))
-                                                    (t nil))) sucessores-repetidos-fechados)))
-         (fechados-a-remover (remove nil (mapcar (lambda (r)
-                                                   (cond
-                                                    ((equal 'substituir (first r)) (third r))
-                                                    (t nil))) sucessores-repetidos-fechados)))
-         (fechados-novos (remover-subarvores fechados-a-remover fechados))
-         (abertos-novos (abertos-dfs abertos sucessores-validos)))
-    (list abertos-novos fechados-novos)))
+(defun mostrar-estatisticas (estatisticas tempo-total)
+  (progn
+   (format t "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
+   (format t "Factor de ramificação média: ~a" (first estatisticas))
+   (terpri)
+   (format t "Número de nós gerados: ~a" (second estatisticas))
+   (terpri)
+   (format t "Número de nós expandidos: ~a" (third estatisticas))
+   (terpri)
+   (format t "Penetrância: ~a" (fourth estatisticas))
+   (terpri)
+   (format t "Tempo de execução em segundos: ~a" tempo-total)
+   (terpri)
+   (format t "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%")))
 
-(defun dfs (no objetivo sucessores operadores profundidade &optional abertos fechados (numero-nos-gerados 0) (numero-nos-expandidos 0))
-  "Algoritmo de procura em profundidade implementado recursivamente
-  Recebe um nó inicial, uma função de avaliação de nó objetivo,
-  uma função geradoradora de nós sucessores, uma lista de operadores fornecidos a esta
-  e um nível de profundidade máximo
-  
-  Um nó é definido como uma lista composta por estado, profundidade e nó pai.
-  A função objetivo deverá receber exclusivamente um nó.
-  A função sucessores deverá receber exclusivamente um nó e uma lista de operadores
-  A profundidade máxima deverá ser um numero inteiro > 0"
-  (cond
-   ((and (null abertos) (null fechados))
-    (dfs no objetivo sucessores operadores profundidade (list no) nil))
-   ((null abertos) nil)
-   ((= (no-profundidade (car abertos)) profundidade) (dfs no objetivo sucessores operadores profundidade (cdr abertos) (append fechados (list (car abertos)))))
-   (t
-    (let* ((n (car abertos))
-           (sucessores-n (funcall sucessores n operadores))
-           (m (no-objetivo-em-lista objetivo sucessores-n)))
-      (cond
-       (m (criar-resultado m (+ numero-nos-gerados (length sucessores-n)) (1+ numero-nos-expandidos)))
-       (t
-        (let ((abertos-fechados-novos (dfs-adicionar-sucessores sucessores-n (append fechados (list n)) (cdr abertos))))
-          (dfs no objetivo sucessores operadores profundidade (first abertos-fechados-novos) (second abertos-fechados-novos)
-               (1+ numero-nos-gerados) (+ numero-nos-expandidos (length sucessores-n))))))))))
+(defun mostrar-no (no)
+  (progn
+   (mostrar-tabuleiro (first (no-estado no)))
+   (format t "Peças disponiveis: ~a" (second (no-estado no)))
+   (terpri)
+   (terpri)))
 
-;; A*
-
-(defun insere (e p L)
-  "Insere um elemento e na posição p de uma lista movendo os restantes uma posição para a frente.
-  Devolve a lista de dimensão (length L) +1"
-  (cond
-   ((zerop p) (append (list e) L))
-   ((null L) nil)
-   (t (cons (car L) (insere e (1- p) (cdr L))))))
-
-(defun procura-binaria (n L-ord &optional baixo alto)
-  "Devolve a posição numa lista ordenada de valores numericos (L-ord)
-  em que valor numerico n deve ser colocado"
-  (cond
-   ((or (null baixo) (null alto)) (procura-binaria n L-ord 0 (1- (length L-ord))))
-   ((< alto baixo) baixo)
-   (t (let* ((mid (floor (/ (+ baixo alto) 2)))
-             (valor-mid (nth mid L-ord)))
-        (cond
-         ((> valor-mid n) (procura-binaria n L-ord baixo (1- mid)))
-         ((< valor-mid n) (procura-binaria n L-ord (1+ mid) alto))
-         (t mid))))))
-
-(defun remove-from-list (l index &optional (i 0))
-  "Remove da lista l o elemento de indice index, devolvendo uma lista de dimensão (1- (length l))"
-  (cond
-   ((= i index) (cdr l))
-   (t (cons (car l) (remove-from-list (cdr l) index (1+ i))))))
-
-(defun remover-subarvore-f (raiz lista f-lista &optional (lista-nova nil) (f-lista-nova nil))
-  "Remove de uma lista de nós com uma lista de valores f associados
-  todos os nós que pertençam à arvore definida por raiz, inclusivamente a própria raiz"
-  (labels ((pertence-a-subarvore (no)
-              (cond
-               ((null no) nil)
-               ((equal (no-pai no) raiz) t)
-               (t (pertence-a-subarvore (no-pai no))))))
-    (cond
-     ((null (car lista)) (list lista-nova f-lista-nova))
-     ((or (equal (car lista) raiz) (pertence-a-subarvore (car lista))) (remover-subarvore-f raiz (cdr lista) (cdr f-lista) lista-nova f-lista-nova))
-     (t (remover-subarvore-f raiz (cdr lista) (cdr f-lista)
-          (append lista-nova (list (car lista))) (append f-lista-nova (list (car f-lista))))))))
+(defun tabuleiro-letras (tabuleiro)
+  (mapcar (lambda (row)
+            (mapcar (lambda (cel)
+                      (cond
+                       ((= cel 2) ":")
+                       ((= cel 1) "#")
+                       (t "_"))) row)) tabuleiro))
 
 
-(defun merge-ordenado-f (elementos f-elementos lista f-lista)
-  "Introduz todos os elementos com valores f não ordenados numa lista ordenada por f (definido por uma lista de elementos e uma de f)
-  Devolve uma nova lista de elementos e de valores f corretamente ordenados"
-  (cond
-   ((null elementos) (list lista f-lista))
-   (t (let ((posicao (procura-binaria (car f-elementos) f-lista)))
-        (merge-ordenado-f (cdr elementos) (cdr f-elementos) (insere (car elementos) posicao lista) (insere (car f-elementos) posicao f-lista))))))
 
-(defun a*-adicionar-sucessores (sucessores f-sucessores fechados f-fechados abertos f-abertos)
-  "Função que implementa o método de inserção de sucessores no algoritmo A*
-    devolve uma lista com a nova lista de nós abertos, a nova lista de valores f de abertos,
-    a nova lista de nós fechados e a nova lista de valores f de fechados
-  Recebe uma lista de nós sucessores, a sua lista de valores f, lista de fechados,
-  a sua lista de valores f, lista de abertos e a sua lista de valores f:
-    1. Procura por sucessores com estado repetido na lista de abertos e:
-        - caso o sucessor tenha valor f menor, remove o nó existente em abertos
-          e introduz o sucessor na lista de abertos
-        - caso contrário é discartado
-    2. Procura por sucessores com estado repetido na lista de fechados e:
-      - caso o sucessor tenha valor f menor,remove toda a subarvore
-        do no fechado da lista de fechados e introduz o sucessor na lista de abertos
-      - caso contrário é discartado
-    3. Coloca os restantes sucessores em abertos"
-  (cond
-   ((null sucessores) (list abertos f-abertos fechados f-fechados))
-   (t
-    (let* ((sucessor (car sucessores))
-           (em-abertos (no-repetido sucessor abertos)))
-      (cond
-       (em-abertos
-        (let* ((indice (indice-elemento-lista (car em-abertos) abertos))
-               (f-aberto (nth indice f-abertos)))
-          (cond
-           ((< (car f-sucessores) f-aberto)
-            (let* ((abertos-temp (remove-from-list abertos indice))
-                   (f-abertos-temp (remove-from-list f-abertos indice))
-                   (merged (merge-ordenado-f (list sucessor) (list (car f-sucessores)) abertos-temp f-abertos-temp)))
-              (a*-adicionar-sucessores (cdr sucessores) (cdr f-sucessores)
-                                       fechados f-fechados (first merged) (second merged))))
-           (t (a*-adicionar-sucessores (cdr sucessores) (cdr f-sucessores)
-                                       fechados f-fechados abertos f-abertos)))))
-       (t
-        (let ((em-fechados (no-repetido sucessor fechados)))
-          (cond
-           (em-fechados
-            (let* ((indice (indice-elemento-lista (car em-fechados) fechados))
-                   (f-fechado (nth indice f-fechados)))
-              (cond
-               ((< (car f-sucessores) f-fechado)
-                (let* (
-                  (subarvore-removida (remover-subarvore-f (car em-fechados) fechados f-fechados))
-                  (merged (merge-ordenado-f (list sucessor) (list (car f-sucessores)) abertos f-abertos)))
-                  (a*-adicionar-sucessores (cdr sucessores) (cdr f-sucessores)
-                                           (first subarvore-removida) (second subarvore-removida) (first merged) (second merged))))
-               (t (a*-adicionar-sucessores (cdr sucessores) (cdr f-sucessores)
-                                           fechados f-fechados abertos f-abertos)))))
-            (t (let
-              (
-                (merged (merge-ordenado-f (list sucessor) (list (car f-sucessores)) abertos f-abertos))
-              )
-              (a*-adicionar-sucessores (cdr sucessores) (cdr f-sucessores)
-                                       fechados f-fechados (first merged) (second merged))
-            ))
+;; Devolve o path para o ficheiro problemas.dat
+(defun diretorio-problemas ()
+  ; (make-pathname :host "c" :directory '(:absolute "lisp") :name "problemas" :type "dat")
+  (concatenate 'string *path* "problemas.dat"))
 
-          ))))))))
+(defun diretorio-resultados ()
+  (concatenate 'string *path* "resultados.dat"))
 
+; Retorna os tabuleiros do ficheiro problemas.dat
+(defun ler-tabuleiros ()
+  (with-open-file (file (diretorio-problemas) :if-does-not-exist nil)
+    (do ((result nil (cons next result)) (next (read file nil 'eof) (read file nil 'eof)))
+      ((equal next 'eof) (reverse result)))))
 
-(defun a* (no objetivo sucessores operadores heuristica)
-  (labels ((recursivo (abertos fechados f-abertos f-fechados &optional (numero-nos-gerados 0) (numero-nos-expandidos 1))
-              (cond
-               ((null abertos) nil)
-               (t
-                (let ((n (car abertos))(f-n (car f-abertos)))
-                  (cond
-                   ((funcall objetivo n) (criar-resultado
-                                          n
-                                          numero-nos-gerados
-                                          numero-nos-expandidos))
-                   (t
-                    (let*
-                      (
-                        (abertos-sem-n (cdr abertos))
-                        (f-abertos-sem-n (cdr f-abertos))
-                        (fechados-com-n (append fechados (list n)))
-                        (f-fechados-com-n (append f-fechados (list f-n)))
-                        (sucessores-n (funcall sucessores n operadores))
-                        (f-sucessores-n (avaliar-nos sucessores-n heuristica))
-                        (sucessores-adicionados
-                          (a*-adicionar-sucessores sucessores-n f-sucessores-n
-                                                  fechados-com-n f-fechados-com-n
-                                                  abertos-sem-n f-abertos-sem-n)))
-                      (recursivo
-                       ;;(append abertos-sem-n sucessores-validos)
-                       (first sucessores-adicionados)
-                       (third sucessores-adicionados)
-                       ;;(append f-abertos-sem-n f-sucessores)
-                       (second sucessores-adicionados)
-                       (fourth sucessores-adicionados)
-                       (+ numero-nos-gerados (length sucessores-n))
-                       (+ numero-nos-expandidos 1))))))))))
+; (defun ler-tabuleiros ()
+;   '((8 ((0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (20 ((0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (28 ((0 0 2 0 0 0 0 0 0 2 2 2 2 2) (0 0 0 2 0 0 0 0 0 2 2 2 2 2) (0 0 0 0 2 0 0 0 0 2 2 2 2 2) (0 0 0 0 0 2 0 0 0 2 2 2 2 2) (0 0 0 0 0 0 2 0 0 2 2 2 2 2) (0 0 0 0 0 0 0 2 0 2 2 2 2 2) (0 0 0 0 0 0 0 0 2 2 2 2 2 2) (0 0 0 0 0 0 0 0 0 2 2 2 2 2) (0 0 0 0 0 0 0 0 0 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (36 ((0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (44 ((0 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 0 2 0 0 0 0 0 0 2 0 0 0 2) (2 0 0 2 0 0 0 0 0 0 2 0 0 2) (2 0 0 0 2 0 0 0 0 0 0 2 0 2) (2 0 0 0 0 2 0 0 0 0 0 0 2 2) (2 0 0 0 0 0 2 0 0 0 0 0 0 2) (2 0 0 0 0 0 0 2 0 0 0 0 0 2) (2 0 0 0 0 0 0 0 2 0 0 0 0 2) (2 0 0 0 0 0 0 0 0 2 0 0 0 2) (2 0 2 0 0 0 0 0 0 0 2 0 0 2) (2 2 0 0 0 0 0 0 0 0 0 2 0 2) (2 0 0 0 2 0 0 0 0 0 0 0 2 2) (2 0 0 0 0 2 0 0 0 0 0 0 0 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (72 ((0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0)))))
 
-    (recursivo (list no) '() '(0) '())))
+;; Mostra o menu com os tabuleiros 
+(defun mostrar-tabuleiros (numero-tabuleiros &optional (i 1))
+  (if (zerop numero-tabuleiros)
+      (progn
+       (format t " ~%|         0 - Voltar                  |")
+       (format t " ~%|                                     |")
+       (format t " ~%|_____________________________________|")
+       (format t " ~%                                       ")
+       (format t " ~%-> Opção: "))
+      (progn
+       (cond
+        ((= i 1)
+         (progn
+          (format t " ~% _____________________________________")
+          (format t " ~%|                                     |")
+          (format t " ~%|           JOGO DO BLOKUS            |")
+          (format t " ~%|                                     |")
+          (format t " ~%|         Escolha o tabuleiro:        |")
+          (format t " ~%|                                     |"))) (t nil))
+       (format t " ~%|         ~a : Tabuleiro ~a             |" i i)
+       (mostrar-tabuleiros (1- numero-tabuleiros) (+ i 1)))))
 
-; (defun no-pertence-a-subarvore (no raiz)
-;               (cond
-;                ((null no) nil)
-;                ((equal (no-pai no) raiz) t)
-;                (t (pertence-a-subarvore (no-pai no) raiz))))
+(defun menu-tabuleiros ()
+  (let ((problemas (ler-tabuleiros)))
+    (progn (mostrar-tabuleiros (length problemas))
+           (let ((option (read)))
+             (cond
+              ((eq option '0) (iniciar))
+              ((or (not (numberp option)) (> option (length problemas)))
+               (progn
+                (format t "Insira uma opção válida")
+                (menu-tabuleiros)))
+              (T (let ((problema (nth (1- option) problemas)))
+                   (menu-algoritmo (first problema) (second problema)))))))))
 
-; (defun no-substituir-parentesco (no antecedente-anterior antecedente-novo)
-;   (flet
-;     ((substituir-parentesco (parentesco)
-;       (cond
-;         ((null parentesco) nil)
-;         ((equal (car parentesco) antedente-anterior) ())
-;       )
-;     ))
-;   )
+; (defun escrever-ficheiro-resultados (sol)
+;   (let* ((tempo-inicial (car sol))
+;          (alg-solucao (car (cdr sol)))
+;          (tempo-fim (car (cdr (cdr sol))))
+;          (alg (car (cdr (cdr (cdr sol)))))
+;          (moves (car (cdr (cdr (cdr (cdr (cdr sol)))))))
+;          (goal (car (cdr (cdr (cdr (cdr (cdr sol))))))))
+;     (with-open-file (file (directory-resultados-file) :direction :output :if-exists :append :if-does-not-exist :create)
+;       (progn
+;        (format file "~%* ------------------------- *")
+;        (format file "~%~t> Algoritmo escolhido: ~a " alg)
+;        (format file "~%~t> Hora de Início: ~a:~a:~a" (car tempo-inicial) (car (cdr tempo-inicial)) (car (cdr (cdr tempo-inicial))))
+;        (format file "~%~t> Hora de Fim: ~a:~a:~a" (car tempo-fim) (car (cdr tempo-fim)) (car (cdr (cdr tempo-fim))))
+;        (format file "~%~t> Número de nós gerados: ~a" (+ (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao)))))
+;        (format file "~%~t> Número de nós expandidos: ~a" (car (cdr (cdr alg-solucao))))
+;        (format file "~%~t> Profundidade máxima: ~a" moves)
+;        (format file "~%~t> Objetivo pretendido: ~a" goal)
+;        (format file "~%~t> Penetrância: ~F" (penetrancia alg-solucao))
+;        (format file "~%~t> Pontos totais: ~a" (no-g (car alg-solucao)))
+;        (display-jogadas (car alg-solucao) (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao))))))))
 
-; )
-
-; (replace-parent-recursively (ls old-parent new-parent &optional new-list replaced)
-;   (cond
-;     ((and (null new-list)) nil )
-;     (())
-;   )
-; )
-
-(defun avaliar-nos (nos heuristica)
-  "Devolve uma lista de avaliações f com base numa lista de nos e uma funcao heuristica
-  em que g(n) é a profundidade do no (custo uniforme)"
-  (mapcar (lambda (no) (+ (no-profundidade no) (funcall heuristica (no-estado no)))) nos))
-
-(defun a*-menor-custo (abertos f-abertos &optional (menor-no nil) (menor-f nil) (index nil) (i 0))
-  "Recebendo uma lista de nos abertos e uma lista de custos f correspondente
-  devolve uma lista com o primeiro nó de custo mais baixo, o seu custo f e a
-  sua posição nas listas"
-  (cond
-   ((and (null menor-f) (null menor-no) (null index)) (a*-menor-custo (cdr abertos) (cdr f-abertos) (car abertos) (car f-abertos) i (1+ i)))
-   ((null abertos) (list menor-no menor-f index))
-   (t
-    (cond
-     ((< (car f-abertos) menor-f) (a*-menor-custo (cdr abertos) (cdr f-abertos) (car abertos) (car f-abertos) i (1+ i)))
-     (t (a*-menor-custo (cdr abertos) (cdr f-abertos) menor-no menor-f index (1+ i)))))))
+(defun tempo-atual ()
+  "Retorna o tempo atual com o formato (h m s)"
+  (multiple-value-bind (s m h) (get-decoded-time)
+    (list h m s)))

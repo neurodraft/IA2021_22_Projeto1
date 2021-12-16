@@ -1,9 +1,3 @@
-
+.gitignore
 *.fasl
 *.alive-repl
-.vscode/alive/REPL-localhost-4005.alive-repl
-.vscode/alive/fasl/tmp.fasl
-.vscode/alive/fasl/tmp.lisp
-.vscode/alive/REPL-localhost-4005.alive-repl
-.vscode/alive/fasl/tmp.fasl
-.vscode/alive/fasl/tmp.lisp
