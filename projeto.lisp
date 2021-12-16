@@ -191,7 +191,7 @@
 
 (defun mostrar-estatisticas (estatisticas tempo-total)
   (progn
-   (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
+   (format t "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
    (format t "Factor de ramificação média: ~a" (first estatisticas))
    (terpri)
    (format t "Número de nós gerados: ~a" (second estatisticas))
