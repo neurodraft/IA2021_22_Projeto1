@@ -133,10 +133,11 @@
    (registar-estatisticas (cdr resultado) tempo-total)))
 
 (defun registar-algoritmo (algoritmo &optional profundida-maxima)
+  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
   (cond
    ((equal algoritmo 'dfs)
     (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
-   (t (format file "Algoritmo utilizado: ~a ~%" algoritmo))))
+   (t (format file "Algoritmo utilizado: ~a ~%" algoritmo)))))
 
 (defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
   (cond
