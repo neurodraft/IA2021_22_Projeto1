@@ -45,7 +45,6 @@
    (format t " ~%                                       ")
    (format t " ~%-> Opção: ")))
 
-
 (defun mostrar-limite-profundidade ()
   (progn
    (format t " ~% _____________________________________")
@@ -61,42 +60,34 @@
    (format t " ~%                                       ")
    (format t " ~%-> Opção: ")))
 
-(defun definir-pasta()
+(defun definir-pasta ()
   (progn
-  (format t "Escreva o path da localizacao do projeto entre aspas~%")
-  (format t "Exemplo: ''C:/Users/username/Desktop/''~%")
-  (let ((path (read)))
-    (load (compile-file (concatenate 'string path "puzzle.lisp")))
-    (load (compile-file (concatenate 'string path "procura.lisp")))
-    (defparameter *path* path)
-    path
-    )
-  )
-)  
+   (format t "Escreva o path da localizacao do projeto entre aspas~%")
+   (format t "Exemplo: ''C:/Users/username/Desktop/''~%")
+   (let ((path (read)))
+     (load (compile-file (concatenate 'string path "puzzle.lisp")))
+     (load (compile-file (concatenate 'string path "procura.lisp")))
+     (defparameter *path* path)
+     path)))
 
-
-(defun menu-limite-profundidade(minimo-casas-preencher tabuleiro)
+(defun menu-limite-profundidade (minimo-casas-preencher tabuleiro)
   (progn (mostrar-limite-profundidade)
-    (let ((option (read)))
-      (cond
-        ((or (not (numberp option)) (< option 0)) (format t "Opção inválida!") (menu-limite-profundidade minimo-casas-preencher tabuleiro))
-        ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro ))
-        (T (efetuar-procura 'dfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher) option))
-      )
-    )
-  )
-)   
+         (let ((option (read)))
+           (cond
+            ((or (not (numberp option)) (< option 0)) (format t "Opção inválida!") (menu-limite-profundidade minimo-casas-preencher tabuleiro))
+            ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
+            (T (efetuar-procura 'dfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher) option))))))
 
 ;; Iniciar o jogo
 (defun iniciar ()
   (progn
-    (definir-pasta) 
-    (mostrar-menu-inicial)
-         (let ((option (read)))
-           (cond
-            ((eq option '1) (menu-tabuleiros))
-            ((eq option '0) (format t "Até à próxima!"))
-            (T (progn (format t "Opção inválida!") (iniciar)))))))
+   (definir-pasta)
+   (mostrar-menu-inicial)
+   (let ((option (read)))
+     (cond
+      ((eq option '1) (menu-tabuleiros))
+      ((eq option '0) (format t "Até à próxima!"))
+      (T (progn (format t "Opção inválida!") (iniciar)))))))
 
 ;; Corre os algoritmos
 (defun menu-algoritmo (minimo-casas-preencher tabuleiro)
@@ -106,8 +97,7 @@
             ((eq option '1)
              (efetuar-procura 'bfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher)))
             ((eq option '2)
-             (menu-limite-profundidade minimo-casas-preencher tabuleiro)
-            )
+             (menu-limite-profundidade minimo-casas-preencher tabuleiro))
             ((eq option '3)
              (menu-heuristica tabuleiro minimo-casas-preencher))
             ((eq option '0) (menu-tabuleiros))
@@ -125,74 +115,60 @@
 (defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
   (let* ((tempo-inicio (tempo-atual))
          (no (criar-no-inicial-blockus tabuleiro))
-         (resultado (cond 
-            ((eq algoritmo 'bfs) (bfs no objetivo 'sucessores (operadores)))
-            ((eq algoritmo 'dfs) (dfs no objetivo 'sucessores (operadores) profundidade-maxima))
-            ((eq algoritmo 'a*) (a* no objetivo 'sucessores (operadores) funcao-heuristica))
-          ))
+         (resultado (cond
+                     ((eq algoritmo 'bfs) (bfs no objetivo 'sucessores (operadores)))
+                     ((eq algoritmo 'dfs) (dfs no objetivo 'sucessores (operadores) profundidade-maxima))
+                     ((eq algoritmo 'a*) (a* no objetivo 'sucessores (operadores) funcao-heuristica))))
          (tempo-final (tempo-atual))
          (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
     (progn
-      (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
-      (registar-resultado resultado tempo-total algoritmo profundidade-maxima)
-      (iniciar)
-    )))
+     (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
+     (registar-resultado resultado tempo-total algoritmo profundidade-maxima)
+     (iniciar))))
 
-(defun registar-resultado(resultado tempo-total algoritmo &optional profundidade-maxima)
+(defun registar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
   (progn
-      (registar-algoritmo algoritmo profundidade-maxima)
-     (registar-solucao (car resultado))
-     (registar-estatisticas (cdr resultado) tempo-total)
-  )
-)
+   (registar-algoritmo algoritmo profundidade-maxima)
+   (registar-solucao (car resultado))
+   (registar-estatisticas (cdr resultado) tempo-total)))
 
 (defun registar-algoritmo (algoritmo &optional profundida-maxima)
   (cond
-    ((equal algoritmo 'dfs)
-      (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
-    (t (format file "Algoritmo utilizado: ~a ~%" algoritmo))
-  )
-)
+   ((equal algoritmo 'dfs)
+    (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
+   (t (format file "Algoritmo utilizado: ~a ~%" algoritmo))))
 
 (defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
   (cond
-    ((equal algoritmo 'dfs)
-      (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
-    (t (format t "Algoritmo utilizado: ~a ~%" algoritmo))
-  )
-)
+   ((equal algoritmo 'dfs)
+    (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
+   (t (format t "Algoritmo utilizado: ~a ~%" algoritmo))))
 
-
-(defun registar-solucao(no)
-   (cond
+(defun registar-solucao (no)
+  (cond
    ((null no) nil)
-   (t (progn (registar-solucao (no-pai no)) (registar-no no))))
-)
+   (t (progn (registar-solucao (no-pai no)) (registar-no no)))))
 
 (defun registar-tabuleiro (tabuleiro)
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-    (format file "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))
-  ))
+    (format file "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))))
 
-(defun registar-no(no)
+(defun registar-no (no)
   (progn
    (registar-tabuleiro (first (no-estado no)))
    (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-   (format file "Peças disponiveis: ~a ~% ~%" (second (no-estado no))))
-   ))
+     (format file "Peças disponiveis: ~a ~% ~%" (second (no-estado no))))))
 
-
-(defun registar-estatisticas(estatisticas tempo-total)
+(defun registar-estatisticas (estatisticas tempo-total)
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-  (progn
-    (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")))
-   (format file "Factor de ramificação média: ~a ~%" (first estatisticas))
-   (format file "Número de nós gerados: ~a ~%" (second estatisticas))
-   (format file "Número de nós expandidos: ~a ~%" (third estatisticas))
-   (format file "Penetrância: ~a ~%" (fourth estatisticas))
-   (format file "Tempo de execução em segundos: ~a ~%" tempo-total)
-   (format file "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%")))
-)
+    (progn
+     (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
+     (format file "Factor de ramificação média: ~a ~%" (first estatisticas))
+     (format file "Número de nós gerados: ~a ~%" (second estatisticas))
+     (format file "Número de nós expandidos: ~a ~%" (third estatisticas))
+     (format file "Penetrância: ~a ~%" (fourth estatisticas))
+     (format file "Tempo de execução em segundos: ~a ~%" tempo-total)
+     (format file "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%"))))
 
 (defun diferenca-tempo (tempo-inicial tempo-final)
   (let* ((tempo-inicial-segundos (+ (* (first tempo-inicial) 3600) (* (second tempo-inicial) 60) (third tempo-inicial)))
@@ -209,13 +185,13 @@
 
 (defun mostrar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
   (progn
-    (mostrar-algoritmo algoritmo profundidade-maxima)
+   (mostrar-algoritmo algoritmo profundidade-maxima)
    (mostrar-solucao (car resultado))
    (mostrar-estatisticas (cdr resultado) tempo-total)))
 
 (defun mostrar-estatisticas (estatisticas tempo-total)
   (progn
-      (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
+   (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
    (format t "Factor de ramificação média: ~a" (first estatisticas))
    (terpri)
    (format t "Número de nós gerados: ~a" (second estatisticas))
@@ -226,7 +202,7 @@
    (terpri)
    (format t "Tempo de execução em segundos: ~a" tempo-total)
    (terpri)
-    (format t "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%")))
+   (format t "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%")))
 
 (defun mostrar-no (no)
   (progn
@@ -248,12 +224,10 @@
 ;; Devolve o path para o ficheiro problemas.dat
 (defun diretorio-problemas ()
   ; (make-pathname :host "c" :directory '(:absolute "lisp") :name "problemas" :type "dat")
-  (concatenate 'string *path* "problemas.dat")
-)
+  (concatenate 'string *path* "problemas.dat"))
 
-(defun diretorio-resultados()
-  (concatenate 'string *path* "resultados.dat")
-)
+(defun diretorio-resultados ()
+  (concatenate 'string *path* "resultados.dat"))
 
 ; Retorna os tabuleiros do ficheiro problemas.dat
 (defun ler-tabuleiros ()
