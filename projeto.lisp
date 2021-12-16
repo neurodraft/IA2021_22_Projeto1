@@ -111,7 +111,7 @@
          (let ((option (read)))
            (cond
             ((eq option '1) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil (criar-funcao-heuristica-base minimo-casas-preencher)))
-            ((eq option '2) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil 'heuristica-original2))
+            ((eq option '2) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil 'heuristica-original))
             ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
             (T (progn (format t "Opção inválida!") (menu-inicial)))))))
 
@@ -125,8 +125,11 @@
          (tempo-final (tempo-atual))
          (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
     (progn
-     (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
-     (registar-resultado resultado tempo-total algoritmo profundidade-maxima)
+      (cond
+        ((null resultado) nil)
+        (t (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
+            (registar-resultado resultado tempo-total algoritmo profundidade-maxima))
+      )
      (menu-inicial))))
 
 (defun registar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
