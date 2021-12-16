@@ -30,7 +30,7 @@
   (cond
    ((null (car lista)) nil)
    ((equal no (car lista)) i)
-   (t (indice-no-lista no (cdr lista) (1+ i)))))
+   (t (indice-elemento-lista no (cdr lista) (1+ i)))))
 
 (defun criar-resultado (no numero-nos-gerados numero-nos-expandidos)
   "Função para criar a lista com os resultados finais de uma procura
