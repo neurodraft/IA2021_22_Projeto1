@@ -133,17 +133,35 @@
          (tempo-final (tempo-atual))
          (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
     (progn
-      (mostrar-resultado resultado tempo-total)
-      (resgistar-resultado resultado tempo-total )
+      (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
+      (registar-resultado resultado tempo-total algoritmo profundidade-maxima)
       (iniciar)
     )))
 
-(defun resgistar-resultado(resultado tempo-total)
+(defun registar-resultado(resultado tempo-total algoritmo &optional profundidade-maxima)
   (progn
+      (registar-algoritmo algoritmo profundidade-maxima)
      (registar-solucao (car resultado))
      (registar-estatisticas (cdr resultado) tempo-total)
   )
 )
+
+(defun registar-algoritmo (algoritmo &optional profundida-maxima)
+  (cond
+    ((equal algoritmo 'dfs)
+      (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
+    (t (format file "Algoritmo utilizado: ~a ~%" algoritmo))
+  )
+)
+
+(defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
+  (cond
+    ((equal algoritmo 'dfs)
+      (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
+    (t (format t "Algoritmo utilizado: ~a ~%" algoritmo))
+  )
+)
+
 
 (defun registar-solucao(no)
    (cond
@@ -167,11 +185,13 @@
 (defun registar-estatisticas(estatisticas tempo-total)
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
   (progn
+    (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")))
    (format file "Factor de ramificação média: ~a ~%" (first estatisticas))
    (format file "Número de nós gerados: ~a ~%" (second estatisticas))
    (format file "Número de nós expandidos: ~a ~%" (third estatisticas))
    (format file "Penetrância: ~a ~%" (fourth estatisticas))
-   (format file "Tempo de execução em segundos: ~a ~%" tempo-total)))
+   (format file "Tempo de execução em segundos: ~a ~%" tempo-total)
+   (format file "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%")))
 )
 
 (defun diferenca-tempo (tempo-inicial tempo-final)
@@ -187,13 +207,15 @@
    ((null no) nil)
    (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))))
 
-(defun mostrar-resultado (resultado tempo-total)
+(defun mostrar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
   (progn
+    (mostrar-algoritmo algoritmo profundidade-maxima)
    (mostrar-solucao (car resultado))
    (mostrar-estatisticas (cdr resultado) tempo-total)))
 
 (defun mostrar-estatisticas (estatisticas tempo-total)
   (progn
+      (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
    (format t "Factor de ramificação média: ~a" (first estatisticas))
    (terpri)
    (format t "Número de nós gerados: ~a" (second estatisticas))
@@ -202,7 +224,9 @@
    (terpri)
    (format t "Penetrância: ~a" (fourth estatisticas))
    (terpri)
-   (format t "Tempo de execução em segundos: ~a" tempo-total)))
+   (format t "Tempo de execução em segundos: ~a" tempo-total)
+   (terpri)
+    (format t "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%")))
 
 (defun mostrar-no (no)
   (progn
