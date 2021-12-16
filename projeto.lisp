@@ -78,16 +78,19 @@
             ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
             (T (efetuar-procura 'dfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher) option))))))
 
-;; Iniciar o jogo
 (defun iniciar ()
   (progn
    (definir-pasta)
+   (menu-inicial)))
+;; menu-inicial do jogo
+(defun menu-inicial ()
+  (progn
    (mostrar-menu-inicial)
    (let ((option (read)))
      (cond
       ((eq option '1) (menu-tabuleiros))
       ((eq option '0) (format t "Até à próxima!"))
-      (T (progn (format t "Opção inválida!") (iniciar)))))))
+      (T (progn (format t "Opção inválida!") (menu-inicial)))))))
 
 ;; Corre os algoritmos
 (defun menu-algoritmo (minimo-casas-preencher tabuleiro)
@@ -110,7 +113,7 @@
             ((eq option '1) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil (criar-funcao-heuristica-base minimo-casas-preencher)))
             ((eq option '2) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil 'heuristica-original2))
             ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
-            (T (progn (format t "Opção inválida!") (iniciar)))))))
+            (T (progn (format t "Opção inválida!") (menu-inicial)))))))
 
 (defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
   (let* ((tempo-inicio (tempo-atual))
@@ -124,7 +127,7 @@
     (progn
      (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
      (registar-resultado resultado tempo-total algoritmo profundidade-maxima)
-     (iniciar))))
+     (menu-inicial))))
 
 (defun registar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
   (progn
@@ -134,16 +137,20 @@
 
 (defun registar-algoritmo (algoritmo &optional profundida-maxima)
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-  (cond
-   ((equal algoritmo 'dfs)
-    (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
-   (t (format file "Algoritmo utilizado: ~a ~%" algoritmo)))))
+    (progn
+     (format file "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
+     (cond
+      ((equal algoritmo 'dfs)
+       (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~% ~%" algoritmo profundida-maxima))
+      (t (format file "Algoritmo utilizado: ~a ~% ~%" algoritmo))))))
 
 (defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
-  (cond
-   ((equal algoritmo 'dfs)
-    (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~%" algoritmo profundida-maxima))
-   (t (format t "Algoritmo utilizado: ~a ~%" algoritmo))))
+  (progn
+   (format t "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
+   (cond
+    ((equal algoritmo 'dfs)
+     (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~% ~%" algoritmo profundida-maxima))
+    (t (format t "Algoritmo utilizado: ~a ~% ~%" algoritmo)))))
 
 (defun registar-solucao (no)
   (cond
@@ -156,6 +163,8 @@
 
 (defun registar-no (no)
   (progn
+   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
+     (format file "Profundidade: ~a ~%" (no-profundidade no)))
    (registar-tabuleiro (first (no-estado no)))
    (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
      (format file "Peças disponiveis: ~a ~% ~%" (second (no-estado no))))))
@@ -207,6 +216,7 @@
 
 (defun mostrar-no (no)
   (progn
+   (format t "Profundidade: ~a ~%" (no-profundidade no))
    (mostrar-tabuleiro (first (no-estado no)))
    (format t "Peças disponiveis: ~a" (second (no-estado no)))
    (terpri)
@@ -266,7 +276,7 @@
     (progn (mostrar-tabuleiros (length problemas))
            (let ((option (read)))
              (cond
-              ((eq option '0) (iniciar))
+              ((eq option '0) (menu-inicial))
               ((or (not (numberp option)) (> option (length problemas)))
                (progn
                 (format t "Insira uma opção válida")

@@ -75,7 +75,7 @@
        (m (criar-resultado m (+ numero-nos-gerados (length sucessores-n)) (1+ numero-nos-expandidos)))
        (t (bfs no objetivo sucessores operadores
                (abertos-bfs (cdr abertos) (nos-nao-repetidos sucessores-n (append (cdr abertos) fechados)))
-               (append fechados (list n)) (1+ numero-nos-gerados) (+ numero-nos-expandidos (length sucessores-n)))))))))
+               (append fechados (list n)) (+ numero-nos-gerados (length sucessores-n)) (1+ numero-nos-expandidos))))))))
 
 ; (defun bfs (no objetivo sucessores operadores)
 ;   "Algoritmo de procura em largura implementado sequencialmente
@@ -198,7 +198,7 @@
        (t
         (let ((abertos-fechados-novos (dfs-adicionar-sucessores sucessores-n (append fechados (list n)) (cdr abertos))))
           (dfs no objetivo sucessores operadores profundidade (first abertos-fechados-novos) (second abertos-fechados-novos)
-               (1+ numero-nos-gerados) (+ numero-nos-expandidos (length sucessores-n))))))))))
+               (+ numero-nos-gerados (length sucessores-n)) (1+ numero-nos-expandidos)))))))))
 
 ;; A*
 
