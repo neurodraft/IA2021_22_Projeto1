@@ -61,6 +61,19 @@
    (format t " ~%                                       ")
    (format t " ~%-> Opção: ")))
 
+(defun definir-pasta()
+  (progn
+  (format t "Escreva o path da localizacao do projeto entre aspas~%")
+  (format t "Exemplo: ''C:/Users/username/Desktop/''~%")
+  (let ((path (read)))
+    (load (compile-file (concatenate 'string path "puzzle.lisp")))
+    (load (compile-file (concatenate 'string path "procura.lisp")))
+    (defparameter *path* path)
+    path
+    )
+  )
+)  
+
 
 (defun menu-limite-profundidade(minimo-casas-preencher tabuleiro)
   (progn (mostrar-limite-profundidade)
@@ -76,7 +89,9 @@
 
 ;; Iniciar o jogo
 (defun iniciar ()
-  (progn (mostrar-menu-inicial)
+  (progn
+    (definir-pasta) 
+    (mostrar-menu-inicial)
          (let ((option (read)))
            (cond
             ((eq option '1) (menu-tabuleiros))
@@ -118,24 +133,51 @@
          (tempo-final (tempo-atual))
          (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
     (progn
-      (mostrar-resultado resultado)
-      (terpri)
-      (format t "Tempo de execução em segundos: ~a" tempo-total)
+      (mostrar-resultado resultado tempo-total)
+      (resgistar-resultado resultado tempo-total )
+      (iniciar)
     )))
+
+(defun resgistar-resultado(resultado tempo-total)
+  (progn
+     (registar-solucao (car resultado))
+     (registar-estatisticas (cdr resultado) tempo-total)
+  )
+)
+
+(defun registar-solucao(no)
+   (cond
+   ((null no) nil)
+   (t (progn (registar-solucao (no-pai no)) (registar-no no))))
+)
+
+(defun registar-tabuleiro (tabuleiro)
+  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
+    (format file "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))
+  ))
+
+(defun registar-no(no)
+  (progn
+   (registar-tabuleiro (first (no-estado no)))
+   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
+   (format file "Peças disponiveis: ~a ~% ~%" (second (no-estado no))))
+   ))
+
+
+(defun registar-estatisticas(estatisticas tempo-total)
+  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
+  (progn
+   (format file "Factor de ramificação média: ~a ~%" (first estatisticas))
+   (format file "Número de nós gerados: ~a ~%" (second estatisticas))
+   (format file "Número de nós expandidos: ~a ~%" (third estatisticas))
+   (format file "Penetrância: ~a ~%" (fourth estatisticas))
+   (format file "Tempo de execução em segundos: ~a ~%" tempo-total)))
+)
 
 (defun diferenca-tempo (tempo-inicial tempo-final)
   (let* ((tempo-inicial-segundos (+ (* (first tempo-inicial) 3600) (* (second tempo-inicial) 60) (third tempo-inicial)))
          (tempo-final-segundos (+ (* (first tempo-final) 3600) (* (second tempo-final) 60) (third tempo-final))))
     (- tempo-final-segundos tempo-inicial-segundos)))
-
-(defun mostrar-estados (nos profundidade)
-  (cond
-   ((null nos) nil)
-   ((/= (no-profundidade (car nos)) profundidade) (mostrar-estados (cdr nos) profundidade))
-   (t (progn
-       (mostrar-tabuleiro (car (car (car nos))))
-       (terpri)
-       (mostrar-estados (cdr nos) profundidade)))))
 
 (defun mostrar-tabuleiro (tabuleiro)
   (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro)))
@@ -145,12 +187,12 @@
    ((null no) nil)
    (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))))
 
-(defun mostrar-resultado (resultado)
+(defun mostrar-resultado (resultado tempo-total)
   (progn
    (mostrar-solucao (car resultado))
-   (mostrar-estatisticas (cdr resultado))))
+   (mostrar-estatisticas (cdr resultado) tempo-total)))
 
-(defun mostrar-estatisticas (estatisticas)
+(defun mostrar-estatisticas (estatisticas tempo-total)
   (progn
    (format t "Factor de ramificação média: ~a" (first estatisticas))
    (terpri)
@@ -158,7 +200,9 @@
    (terpri)
    (format t "Número de nós expandidos: ~a" (third estatisticas))
    (terpri)
-   (format t "Penetrância: ~a" (fourth estatisticas))))
+   (format t "Penetrância: ~a" (fourth estatisticas))
+   (terpri)
+   (format t "Tempo de execução em segundos: ~a" tempo-total)))
 
 (defun mostrar-no (no)
   (progn
@@ -179,7 +223,13 @@
 
 ;; Devolve o path para o ficheiro problemas.dat
 (defun diretorio-problemas ()
-  (make-pathname :host "c" :directory '(:absolute "lisp") :name "problemas" :type "dat"))
+  ; (make-pathname :host "c" :directory '(:absolute "lisp") :name "problemas" :type "dat")
+  (concatenate 'string *path* "problemas.dat")
+)
+
+(defun diretorio-resultados()
+  (concatenate 'string *path* "resultados.dat")
+)
 
 ; Retorna os tabuleiros do ficheiro problemas.dat
 (defun ler-tabuleiros ()
@@ -225,29 +275,26 @@
               (T (let ((problema (nth (1- option) problemas)))
                    (menu-algoritmo (first problema) (second problema)))))))))
 
-(defun directory-resultados-file ()
-  (make-pathname :host "c" :directory '(:absolute "lisp") :name "resultados" :type "dat"))
-
-(defun escrever-ficheiro-resultados (sol)
-  (let* ((tempo-inicial (car sol))
-         (alg-solucao (car (cdr sol)))
-         (tempo-fim (car (cdr (cdr sol))))
-         (alg (car (cdr (cdr (cdr sol)))))
-         (moves (car (cdr (cdr (cdr (cdr (cdr sol)))))))
-         (goal (car (cdr (cdr (cdr (cdr (cdr sol))))))))
-    (with-open-file (file (directory-resultados-file) :direction :output :if-exists :append :if-does-not-exist :create)
-      (progn
-       (format file "~%* ------------------------- *")
-       (format file "~%~t> Algoritmo escolhido: ~a " alg)
-       (format file "~%~t> Hora de Início: ~a:~a:~a" (car tempo-inicial) (car (cdr tempo-inicial)) (car (cdr (cdr tempo-inicial))))
-       (format file "~%~t> Hora de Fim: ~a:~a:~a" (car tempo-fim) (car (cdr tempo-fim)) (car (cdr (cdr tempo-fim))))
-       (format file "~%~t> Número de nós gerados: ~a" (+ (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao)))))
-       (format file "~%~t> Número de nós expandidos: ~a" (car (cdr (cdr alg-solucao))))
-       (format file "~%~t> Profundidade máxima: ~a" moves)
-       (format file "~%~t> Objetivo pretendido: ~a" goal)
-       (format file "~%~t> Penetrância: ~F" (penetrancia alg-solucao))
-       (format file "~%~t> Pontos totais: ~a" (no-g (car alg-solucao)))
-       (display-jogadas (car alg-solucao) (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao))))))))
+; (defun escrever-ficheiro-resultados (sol)
+;   (let* ((tempo-inicial (car sol))
+;          (alg-solucao (car (cdr sol)))
+;          (tempo-fim (car (cdr (cdr sol))))
+;          (alg (car (cdr (cdr (cdr sol)))))
+;          (moves (car (cdr (cdr (cdr (cdr (cdr sol)))))))
+;          (goal (car (cdr (cdr (cdr (cdr (cdr sol))))))))
+;     (with-open-file (file (directory-resultados-file) :direction :output :if-exists :append :if-does-not-exist :create)
+;       (progn
+;        (format file "~%* ------------------------- *")
+;        (format file "~%~t> Algoritmo escolhido: ~a " alg)
+;        (format file "~%~t> Hora de Início: ~a:~a:~a" (car tempo-inicial) (car (cdr tempo-inicial)) (car (cdr (cdr tempo-inicial))))
+;        (format file "~%~t> Hora de Fim: ~a:~a:~a" (car tempo-fim) (car (cdr tempo-fim)) (car (cdr (cdr tempo-fim))))
+;        (format file "~%~t> Número de nós gerados: ~a" (+ (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao)))))
+;        (format file "~%~t> Número de nós expandidos: ~a" (car (cdr (cdr alg-solucao))))
+;        (format file "~%~t> Profundidade máxima: ~a" moves)
+;        (format file "~%~t> Objetivo pretendido: ~a" goal)
+;        (format file "~%~t> Penetrância: ~F" (penetrancia alg-solucao))
+;        (format file "~%~t> Pontos totais: ~a" (no-g (car alg-solucao)))
+;        (display-jogadas (car alg-solucao) (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao))))))))
 
 (defun tempo-atual ()
   "Retorna o tempo atual com o formato (h m s)"
