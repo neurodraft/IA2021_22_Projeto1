@@ -1,4 +1,5 @@
 (defun mostrar-menu-inicial ()
+  "Mostra o menu inicial"
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -13,6 +14,7 @@
 
 ;; Seleção do algoritmo
 (defun mostrar-selecionar-algoritmo ()
+  "Mostra o menu que permite selecionar o algoritmo"
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -30,6 +32,7 @@
    (format t " ~%-> Opção: ")))
 
 (defun mostrar-selecionar-heuristica ()
+  "Mostra o menu que permite selecionar a heuristica a usar"
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -46,6 +49,7 @@
    (format t " ~%-> Opção: ")))
 
 (defun mostrar-limite-profundidade ()
+  "Mostra o menu que permite escolher o nível de profundidade"
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -61,6 +65,7 @@
    (format t " ~%-> Opção: ")))
 
 (defun definir-pasta ()
+  "Pede o path onde o projeto se encotra e vai compilar os ficheiros puzzle.lisp e procura.lisp"
   (progn
    (format t "Escreva o path da localizacao do projeto entre aspas~%")
    (format t "Exemplo: ''C:/Users/username/Desktop/''~%")
@@ -71,6 +76,8 @@
      path)))
 
 (defun menu-limite-profundidade (minimo-casas-preencher tabuleiro)
+  "Chama a função que permite mostrar o menu onde é pedido para user escolher o nível de profundidade
+  e lê o input do utilizador. De seguida corre o algoritmo"
   (progn (mostrar-limite-profundidade)
          (let ((option (read)))
            (cond
@@ -79,11 +86,13 @@
             (T (efetuar-procura 'dfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher) option))))))
 
 (defun iniciar ()
+  "Função que começa o programa"
   (progn
    (definir-pasta)
    (menu-inicial)))
-;; menu-inicial do jogo
+
 (defun menu-inicial ()
+  "Chama a função que permite mostrar o menu inicial e lê o input do utilizador. De seguida vai para o menu onde se escolhe os tabuleiros"
   (progn
    (mostrar-menu-inicial)
    (let ((option (read)))
@@ -94,6 +103,8 @@
 
 ;; Corre os algoritmos
 (defun menu-algoritmo (minimo-casas-preencher tabuleiro)
+  "Chama a função que permite mostrar o menu onde é pedido para user escolher o algoritmo
+  e lê o input do utilizador."
   (progn (mostrar-selecionar-algoritmo)
          (let ((option (read)))
            (cond
@@ -107,6 +118,8 @@
             (T (progn (format t "Opção inválida!") (menu-algoritmo minimo-casas-preencher tabuleiro)))))))
 
 (defun menu-heuristica (tabuleiro minimo-casas-preencher)
+  "Chama a função que permite mostrar o menu onde é pedido para user escolher a heuristica
+  e lê o input do utilizador."
   (progn (mostrar-selecionar-heuristica)
          (let ((option (read)))
            (cond
@@ -115,30 +128,51 @@
             ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
             (T (progn (format t "Opção inválida!") (menu-inicial)))))))
 
+; (defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
+;   "Inicia os algoritmos, e conta o tempo total de execução. Chama as funções para registar os resultados"
+;   (let* ((tempo-inicio (tempo-atual))
+;          (no (criar-no-inicial-blockus tabuleiro))
+;          (resultado (cond
+;                      ((eq algoritmo 'bfs) (bfs no objetivo 'sucessores (operadores)))
+;                      ((eq algoritmo 'dfs) (dfs no objetivo 'sucessores (operadores) profundidade-maxima))
+;                      ((eq algoritmo 'a*) (a* no objetivo 'sucessores (operadores) funcao-heuristica))))
+;          (tempo-final (tempo-atual))
+;          (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
+;     (progn
+;       (cond
+;         ((null resultado) nil)
+;         (t (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
+;             (registar-resultado resultado tempo-total algoritmo profundidade-maxima))
+;       )
+;      (menu-inicial))))
+
 (defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
-  (let* ((tempo-inicio (tempo-atual))
+  "Inicia os algoritmos, e conta o tempo total de execução. Chama as funções para registar os resultados"
+  (let* ((tempo-inicio (get-internal-real-time))
          (no (criar-no-inicial-blockus tabuleiro))
          (resultado (cond
                      ((eq algoritmo 'bfs) (bfs no objetivo 'sucessores (operadores)))
                      ((eq algoritmo 'dfs) (dfs no objetivo 'sucessores (operadores) profundidade-maxima))
                      ((eq algoritmo 'a*) (a* no objetivo 'sucessores (operadores) funcao-heuristica))))
-         (tempo-final (tempo-atual))
-         (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
+         (tempo-final (get-internal-real-time))
+         (tempo-total (/ (- tempo-final tempo-inicio) 1000.0)))
     (progn
       (cond
         ((null resultado) nil)
         (t (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
             (registar-resultado resultado tempo-total algoritmo profundidade-maxima))
       )
-     (menu-inicial))))
+     (menu-inicial))))     
 
 (defun registar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
+  "Função para gerir a criação dos resultados"
   (progn
    (registar-algoritmo algoritmo profundidade-maxima)
    (registar-solucao (car resultado))
    (registar-estatisticas (cdr resultado) tempo-total)))
 
 (defun registar-algoritmo (algoritmo &optional profundida-maxima)
+  "Escreve as informações relacionadas ao algoritmo no ficheiro resultados.dat"
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
     (progn
      (format file "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
@@ -148,6 +182,7 @@
       (t (format file "Algoritmo utilizado: ~a ~% ~%" algoritmo))))))
 
 (defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
+  "Imprime as informações relacionadas ao algoritmo"
   (progn
    (format t "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
    (cond
@@ -156,15 +191,18 @@
     (t (format t "Algoritmo utilizado: ~a ~% ~%" algoritmo)))))
 
 (defun registar-solucao (no)
+  "Escreve o nó no ficheiro resultados.dat"
   (cond
    ((null no) nil)
    (t (progn (registar-solucao (no-pai no)) (registar-no no)))))
 
 (defun registar-tabuleiro (tabuleiro)
+  "Escreve o tabuleiro no ficheiro resultados.dat"
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
     (format file "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))))
 
 (defun registar-no (no)
+  "Escreve as imformações relacionadas ao nó no ficheiro resultados.dat"
   (progn
    (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
      (format file "Profundidade: ~a ~%" (no-profundidade no)))
@@ -173,6 +211,7 @@
      (format file "Peças disponiveis: ~a ~% ~%" (second (no-estado no))))))
 
 (defun registar-estatisticas (estatisticas tempo-total)
+  "Escreve as estatisticas relacionadas"
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
     (progn
      (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
@@ -183,20 +222,23 @@
      (format file "Tempo de execução em segundos: ~a ~%" tempo-total)
      (format file "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%"))))
 
-(defun diferenca-tempo (tempo-inicial tempo-final)
-  (let* ((tempo-inicial-segundos (+ (* (first tempo-inicial) 3600) (* (second tempo-inicial) 60) (third tempo-inicial)))
-         (tempo-final-segundos (+ (* (first tempo-final) 3600) (* (second tempo-final) 60) (third tempo-final))))
-    (- tempo-final-segundos tempo-inicial-segundos)))
+; (defun diferenca-tempo (tempo-inicial tempo-final)
+;   (let* ((tempo-inicial-segundos (+ (* (first tempo-inicial) 3600) (* (second tempo-inicial) 60) (third tempo-inicial)))
+;          (tempo-final-segundos (+ (* (first tempo-final) 3600) (* (second tempo-final) 60) (third tempo-final))))
+;     (- tempo-final-segundos tempo-inicial-segundos)))
 
 (defun mostrar-tabuleiro (tabuleiro)
+  "Imprime o tabuleiro"
   (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro)))
 
 (defun mostrar-solucao (no)
+  "Gere a representação dos nós"
   (cond
    ((null no) nil)
    (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))))
 
 (defun mostrar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
+  "Função para gerir as funções que imprimem os resultados"
   (progn
    (mostrar-algoritmo algoritmo profundidade-maxima)
    (mostrar-solucao (car resultado))
@@ -234,26 +276,22 @@
                        (t "_"))) row)) tabuleiro))
 
 
-
-;; Devolve o path para o ficheiro problemas.dat
 (defun diretorio-problemas ()
-  ; (make-pathname :host "c" :directory '(:absolute "lisp") :name "problemas" :type "dat")
+  "Devolve o path para o ficheiro problemas.dat"
   (concatenate 'string *path* "problemas.dat"))
 
 (defun diretorio-resultados ()
+  ";Devolve o path para o ficheiro resultados.dat"
   (concatenate 'string *path* "resultados.dat"))
 
-; Retorna os tabuleiros do ficheiro problemas.dat
 (defun ler-tabuleiros ()
+  "Retorna os tabuleiros do ficheiro problemas.dat"
   (with-open-file (file (diretorio-problemas) :if-does-not-exist nil)
     (do ((result nil (cons next result)) (next (read file nil 'eof) (read file nil 'eof)))
       ((equal next 'eof) (reverse result)))))
 
-; (defun ler-tabuleiros ()
-;   '((8 ((0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (20 ((0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (28 ((0 0 2 0 0 0 0 0 0 2 2 2 2 2) (0 0 0 2 0 0 0 0 0 2 2 2 2 2) (0 0 0 0 2 0 0 0 0 2 2 2 2 2) (0 0 0 0 0 2 0 0 0 2 2 2 2 2) (0 0 0 0 0 0 2 0 0 2 2 2 2 2) (0 0 0 0 0 0 0 2 0 2 2 2 2 2) (0 0 0 0 0 0 0 0 2 2 2 2 2 2) (0 0 0 0 0 0 0 0 0 2 2 2 2 2) (0 0 0 0 0 0 0 0 0 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (36 ((0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (44 ((0 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 0 2 0 0 0 0 0 0 2 0 0 0 2) (2 0 0 2 0 0 0 0 0 0 2 0 0 2) (2 0 0 0 2 0 0 0 0 0 0 2 0 2) (2 0 0 0 0 2 0 0 0 0 0 0 2 2) (2 0 0 0 0 0 2 0 0 0 0 0 0 2) (2 0 0 0 0 0 0 2 0 0 0 0 0 2) (2 0 0 0 0 0 0 0 2 0 0 0 0 2) (2 0 0 0 0 0 0 0 0 2 0 0 0 2) (2 0 2 0 0 0 0 0 0 0 2 0 0 2) (2 2 0 0 0 0 0 0 0 0 0 2 0 2) (2 0 0 0 2 0 0 0 0 0 0 0 2 2) (2 0 0 0 0 2 0 0 0 0 0 0 0 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (72 ((0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0)))))
-
-;; Mostra o menu com os tabuleiros 
 (defun mostrar-tabuleiros (numero-tabuleiros &optional (i 1))
+  "Mostra o menu com os tabuleiros"
   (if (zerop numero-tabuleiros)
       (progn
        (format t " ~%|         0 - Voltar                  |")
@@ -286,27 +324,6 @@
                 (menu-tabuleiros)))
               (T (let ((problema (nth (1- option) problemas)))
                    (menu-algoritmo (first problema) (second problema)))))))))
-
-; (defun escrever-ficheiro-resultados (sol)
-;   (let* ((tempo-inicial (car sol))
-;          (alg-solucao (car (cdr sol)))
-;          (tempo-fim (car (cdr (cdr sol))))
-;          (alg (car (cdr (cdr (cdr sol)))))
-;          (moves (car (cdr (cdr (cdr (cdr (cdr sol)))))))
-;          (goal (car (cdr (cdr (cdr (cdr (cdr sol))))))))
-;     (with-open-file (file (directory-resultados-file) :direction :output :if-exists :append :if-does-not-exist :create)
-;       (progn
-;        (format file "~%* ------------------------- *")
-;        (format file "~%~t> Algoritmo escolhido: ~a " alg)
-;        (format file "~%~t> Hora de Início: ~a:~a:~a" (car tempo-inicial) (car (cdr tempo-inicial)) (car (cdr (cdr tempo-inicial))))
-;        (format file "~%~t> Hora de Fim: ~a:~a:~a" (car tempo-fim) (car (cdr tempo-fim)) (car (cdr (cdr tempo-fim))))
-;        (format file "~%~t> Número de nós gerados: ~a" (+ (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao)))))
-;        (format file "~%~t> Número de nós expandidos: ~a" (car (cdr (cdr alg-solucao))))
-;        (format file "~%~t> Profundidade máxima: ~a" moves)
-;        (format file "~%~t> Objetivo pretendido: ~a" goal)
-;        (format file "~%~t> Penetrância: ~F" (penetrancia alg-solucao))
-;        (format file "~%~t> Pontos totais: ~a" (no-g (car alg-solucao)))
-;        (display-jogadas (car alg-solucao) (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao))))))))
 
 (defun tempo-atual ()
   "Retorna o tempo atual com o formato (h m s)"
