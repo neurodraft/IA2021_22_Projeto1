@@ -11,8 +11,6 @@
    (format t " ~%                                       ")
    (format t " ~%-> Opção: ")))
 
-
-;; Seleção do algoritmo
 (defun mostrar-selecionar-algoritmo ()
   "Mostra o menu que permite selecionar o algoritmo"
   (progn
@@ -101,7 +99,6 @@
       ((eq option '0) (format t "Até à próxima!"))
       (T (progn (format t "Opção inválida!") (menu-inicial)))))))
 
-;; Corre os algoritmos
 (defun menu-algoritmo (minimo-casas-preencher tabuleiro)
   "Chama a função que permite mostrar o menu onde é pedido para user escolher o algoritmo
   e lê o input do utilizador."
@@ -127,24 +124,6 @@
             ((eq option '2) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil 'heuristica-original))
             ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
             (T (progn (format t "Opção inválida!") (menu-inicial)))))))
-
-; (defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
-;   "Inicia os algoritmos, e conta o tempo total de execução. Chama as funções para registar os resultados"
-;   (let* ((tempo-inicio (tempo-atual))
-;          (no (criar-no-inicial-blockus tabuleiro))
-;          (resultado (cond
-;                      ((eq algoritmo 'bfs) (bfs no objetivo 'sucessores (operadores)))
-;                      ((eq algoritmo 'dfs) (dfs no objetivo 'sucessores (operadores) profundidade-maxima))
-;                      ((eq algoritmo 'a*) (a* no objetivo 'sucessores (operadores) funcao-heuristica))))
-;          (tempo-final (tempo-atual))
-;          (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
-;     (progn
-;       (cond
-;         ((null resultado) nil)
-;         (t (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
-;             (registar-resultado resultado tempo-total algoritmo profundidade-maxima))
-;       )
-;      (menu-inicial))))
 
 (defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
   "Inicia os algoritmos, e conta o tempo total de execução. Chama as funções para registar os resultados"
@@ -221,11 +200,6 @@
      (format file "Penetrância: ~a ~%" (fourth estatisticas))
      (format file "Tempo de execução em segundos: ~a ~%" tempo-total)
      (format file "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%"))))
-
-; (defun diferenca-tempo (tempo-inicial tempo-final)
-;   (let* ((tempo-inicial-segundos (+ (* (first tempo-inicial) 3600) (* (second tempo-inicial) 60) (third tempo-inicial)))
-;          (tempo-final-segundos (+ (* (first tempo-final) 3600) (* (second tempo-final) 60) (third tempo-final))))
-;     (- tempo-final-segundos tempo-inicial-segundos)))
 
 (defun mostrar-tabuleiro (tabuleiro)
   "Imprime o tabuleiro"
@@ -324,8 +298,3 @@
                 (menu-tabuleiros)))
               (T (let ((problema (nth (1- option) problemas)))
                    (menu-algoritmo (first problema) (second problema)))))))))
-
-(defun tempo-atual ()
-  "Retorna o tempo atual com o formato (h m s)"
-  (multiple-value-bind (s m h) (get-decoded-time)
-    (list h m s)))
