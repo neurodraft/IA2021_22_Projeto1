@@ -135,8 +135,7 @@
      (t (cons (car lista) (remover-subarvore raiz (cdr lista)))))))
 
 (defun remover-subarvores (a-remover lista)
-  "Remove múltiplas subarvores fornecidos como uma lista de nós raiz e uma lista de nós
-  "
+  "Remove múltiplas subarvores fornecidos como uma lista de nós raiz e uma lista de nós"
   (cond
    ((null (car a-remover)) lista)
    (t (remover-subarvores (cdr a-remover) (remove nil (remover-subarvore (car a-remover) lista))))))
@@ -361,14 +360,14 @@
   em que g(n) é a profundidade do no (custo uniforme)"
   (mapcar (lambda (no) (+ (no-profundidade no) (funcall heuristica (no-estado no)))) nos))
 
-(defun a*-menor-custo (abertos f-abertos &optional (menor-no nil) (menor-f nil) (index nil) (i 0))
-  "Recebendo uma lista de nos abertos e uma lista de custos f correspondente
-  devolve uma lista com o primeiro nó de custo mais baixo, o seu custo f e a
-  sua posição nas listas"
-  (cond
-   ((and (null menor-f) (null menor-no) (null index)) (a*-menor-custo (cdr abertos) (cdr f-abertos) (car abertos) (car f-abertos) i (1+ i)))
-   ((null abertos) (list menor-no menor-f index))
-   (t
-    (cond
-     ((< (car f-abertos) menor-f) (a*-menor-custo (cdr abertos) (cdr f-abertos) (car abertos) (car f-abertos) i (1+ i)))
-     (t (a*-menor-custo (cdr abertos) (cdr f-abertos) menor-no menor-f index (1+ i)))))))
+; (defun a*-menor-custo (abertos f-abertos &optional (menor-no nil) (menor-f nil) (index nil) (i 0))
+;   "Recebendo uma lista de nos abertos e uma lista de custos f correspondente
+;   devolve uma lista com o primeiro nó de custo mais baixo, o seu custo f e a
+;   sua posição nas listas"
+;   (cond
+;    ((and (null menor-f) (null menor-no) (null index)) (a*-menor-custo (cdr abertos) (cdr f-abertos) (car abertos) (car f-abertos) i (1+ i)))
+;    ((null abertos) (list menor-no menor-f index))
+;    (t
+;     (cond
+;      ((< (car f-abertos) menor-f) (a*-menor-custo (cdr abertos) (cdr f-abertos) (car abertos) (car f-abertos) i (1+ i)))
+;      (t (a*-menor-custo (cdr abertos) (cdr f-abertos) menor-no menor-f index (1+ i)))))))

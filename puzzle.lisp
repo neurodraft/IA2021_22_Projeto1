@@ -119,7 +119,7 @@
 )
 
 (defun peca-b ()
-    "Peça A descrita como uma matriz 1x1 e uma lista de 4 deslocações
+    "Peça B descrita como uma matriz 2x2 e uma lista de 4 deslocações
     cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
     da forma da peça relativamente a posicao no tabuleiro"
     '(
