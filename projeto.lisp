@@ -1,5 +1,22 @@
+(defun iniciar ()
+  "Função que inicia o programa"
+  (progn
+   (definir-pasta)
+   (menu-inicial)))
+
+(defun definir-pasta ()
+  "Pede o path da localização do projeto e compila os ficheiros puzzle.lisp e procura.lisp"
+  (progn
+   (format t "Escreva o path da localizacao do projeto entre aspas~%")
+   (format t "Exemplo: ''C:/Users/username/Desktop/''~%")
+   (let ((path (read)))
+     (load (compile-file (concatenate 'string path "puzzle.lisp")))
+     (load (compile-file (concatenate 'string path "procura.lisp")))
+     (defparameter *path* path)
+     path)))  
+ 
 (defun mostrar-menu-inicial ()
-  "Mostra o menu inicial"
+  "Imprime no listener o menu inicial"
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -12,7 +29,7 @@
    (format t " ~%-> Opção: ")))
 
 (defun mostrar-selecionar-algoritmo ()
-  "Mostra o menu que permite selecionar o algoritmo"
+  "Imprime no listener o menu que permite selecionar o algoritmo"
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -30,7 +47,7 @@
    (format t " ~%-> Opção: ")))
 
 (defun mostrar-selecionar-heuristica ()
-  "Mostra o menu que permite selecionar a heuristica a usar"
+  "Imprime no listener o menu que permite selecionar a heuristica a ser usada"
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -47,7 +64,7 @@
    (format t " ~%-> Opção: ")))
 
 (defun mostrar-limite-profundidade ()
-  "Mostra o menu que permite escolher o nível de profundidade"
+  "Imprime no listener o menu que permite inserir o nível máximo de profundidade"
   (progn
    (format t " ~% _____________________________________")
    (format t " ~%|                                     |")
@@ -62,20 +79,31 @@
    (format t " ~%                                       ")
    (format t " ~%-> Opção: ")))
 
-(defun definir-pasta ()
-  "Pede o path onde o projeto se encotra e vai compilar os ficheiros puzzle.lisp e procura.lisp"
-  (progn
-   (format t "Escreva o path da localizacao do projeto entre aspas~%")
-   (format t "Exemplo: ''C:/Users/username/Desktop/''~%")
-   (let ((path (read)))
-     (load (compile-file (concatenate 'string path "puzzle.lisp")))
-     (load (compile-file (concatenate 'string path "procura.lisp")))
-     (defparameter *path* path)
-     path)))
+(defun mostrar-tabuleiros (numero-tabuleiros &optional (i 1))
+  "Imprime no listener o menu que permite selecionar o tabuleiro a ser usado"
+  (if (zerop numero-tabuleiros)
+      (progn
+       (format t " ~%|         0 - Voltar                  |")
+       (format t " ~%|                                     |")
+       (format t " ~%|_____________________________________|")
+       (format t " ~%                                       ")
+       (format t " ~%-> Opção: "))
+      (progn
+       (cond
+        ((= i 1)
+         (progn
+          (format t " ~% _____________________________________")
+          (format t " ~%|                                     |")
+          (format t " ~%|           JOGO DO BLOKUS            |")
+          (format t " ~%|                                     |")
+          (format t " ~%|         Escolha o tabuleiro:        |")
+          (format t " ~%|                                     |"))) (t nil))
+       (format t " ~%|         ~a : Tabuleiro ~a             |" i i)
+       (mostrar-tabuleiros (1- numero-tabuleiros) (+ i 1)))))
+
 
 (defun menu-limite-profundidade (minimo-casas-preencher tabuleiro)
-  "Chama a função que permite mostrar o menu onde é pedido para user escolher o nível de profundidade
-  e lê o input do utilizador. De seguida corre o algoritmo"
+  "Chama a função mostrar-limite-profundidade e lê o input do utilizador"
   (progn (mostrar-limite-profundidade)
          (let ((option (read)))
            (cond
@@ -83,14 +111,9 @@
             ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
             (T (efetuar-procura 'dfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher) option))))))
 
-(defun iniciar ()
-  "Função que começa o programa"
-  (progn
-   (definir-pasta)
-   (menu-inicial)))
 
 (defun menu-inicial ()
-  "Chama a função que permite mostrar o menu inicial e lê o input do utilizador. De seguida vai para o menu onde se escolhe os tabuleiros"
+  "Chama a função mostrar-menu-inicial, lê o input do utilizador e redireciona para o menu de escolha de tabuleiros"
   (progn
    (mostrar-menu-inicial)
    (let ((option (read)))
@@ -100,8 +123,7 @@
       (T (progn (format t "Opção inválida!") (menu-inicial)))))))
 
 (defun menu-algoritmo (minimo-casas-preencher tabuleiro)
-  "Chama a função que permite mostrar o menu onde é pedido para user escolher o algoritmo
-  e lê o input do utilizador."
+  "Chama a função mostrar-selecionar-algoritmo, lê o input do utilizador e redireciona para o menu respetivo de cada algoritmo"
   (progn (mostrar-selecionar-algoritmo)
          (let ((option (read)))
            (cond
@@ -115,8 +137,7 @@
             (T (progn (format t "Opção inválida!") (menu-algoritmo minimo-casas-preencher tabuleiro)))))))
 
 (defun menu-heuristica (tabuleiro minimo-casas-preencher)
-  "Chama a função que permite mostrar o menu onde é pedido para user escolher a heuristica
-  e lê o input do utilizador."
+  "Chama a função mostrar-selecionar-heuristica e lê o input do utilizador"
   (progn (mostrar-selecionar-heuristica)
          (let ((option (read)))
            (cond
@@ -125,8 +146,22 @@
             ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
             (T (progn (format t "Opção inválida!") (menu-inicial)))))))
 
+(defun menu-tabuleiros ()
+"Chama a função mostrar-tabuleiros e ler-tabuleiros, o nº de opções depende do número de problemas encotrados no ficheiro problemas.dat"
+  (let ((problemas (ler-tabuleiros)))
+    (progn (mostrar-tabuleiros (length problemas))
+           (let ((option (read)))
+             (cond
+              ((eq option '0) (menu-inicial))
+              ((or (not (numberp option)) (> option (length problemas)))
+               (progn
+                (format t "Insira uma opção válida")
+                (menu-tabuleiros)))
+              (T (let ((problema (nth (1- option) problemas)))
+                   (menu-algoritmo (first problema) (second problema)))))))))
+
 (defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
-  "Inicia os algoritmos, e conta o tempo total de execução. Chama as funções para registar os resultados"
+  "Executa os algoritmos e conta o tempo total de execução. Chama as funções que registam e imprimem os resultados e estatísticas"
   (let* ((tempo-inicio (get-internal-real-time))
          (no (criar-no-inicial-blockus tabuleiro))
          (resultado (cond
@@ -144,14 +179,14 @@
      (menu-inicial))))     
 
 (defun registar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
-  "Função para gerir a criação dos resultados"
+  "Função que gere a criação dos resultados, chama as funções necessárias para tal"
   (progn
    (registar-algoritmo algoritmo profundidade-maxima)
    (registar-solucao (car resultado))
    (registar-estatisticas (cdr resultado) tempo-total)))
 
 (defun registar-algoritmo (algoritmo &optional profundida-maxima)
-  "Escreve as informações relacionadas ao algoritmo no ficheiro resultados.dat"
+  "Regista no ficheiro resultados.dat as informações iniciais do algoritmo"
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
     (progn
      (format file "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
@@ -160,28 +195,19 @@
        (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~% ~%" algoritmo profundida-maxima))
       (t (format file "Algoritmo utilizado: ~a ~% ~%" algoritmo))))))
 
-(defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
-  "Imprime as informações relacionadas ao algoritmo"
-  (progn
-   (format t "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
-   (cond
-    ((equal algoritmo 'dfs)
-     (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~% ~%" algoritmo profundida-maxima))
-    (t (format t "Algoritmo utilizado: ~a ~% ~%" algoritmo)))))
-
 (defun registar-solucao (no)
-  "Escreve o nó no ficheiro resultados.dat"
+  "Função que gere a criação dos resultados dos nós"
   (cond
    ((null no) nil)
    (t (progn (registar-solucao (no-pai no)) (registar-no no)))))
 
 (defun registar-tabuleiro (tabuleiro)
-  "Escreve o tabuleiro no ficheiro resultados.dat"
+  "Regista no ficheiro resultados.dat o estado do tabuleiro"
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
     (format file "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))))
-
+  
 (defun registar-no (no)
-  "Escreve as imformações relacionadas ao nó no ficheiro resultados.dat"
+  "Regista no ficheiro resultados.dat as informações do nó atual"
   (progn
    (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
      (format file "Profundidade: ~a ~%" (no-profundidade no)))
@@ -190,7 +216,7 @@
      (format file "Peças disponiveis: ~a ~% ~%" (second (no-estado no))))))
 
 (defun registar-estatisticas (estatisticas tempo-total)
-  "Escreve as estatisticas relacionadas"
+  "Regista no ficheiro resultados.dat as estatísticas da execução do algoritmo"
   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
     (progn
      (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
@@ -201,24 +227,34 @@
      (format file "Tempo de execução em segundos: ~a ~%" tempo-total)
      (format file "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%"))))
 
+(defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
+  "Imprime no listener as informações iniciais do algoritmo"
+  (progn
+   (format t "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
+   (cond
+    ((equal algoritmo 'dfs)
+     (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~% ~%" algoritmo profundida-maxima))
+    (t (format t "Algoritmo utilizado: ~a ~% ~%" algoritmo)))))
+
 (defun mostrar-tabuleiro (tabuleiro)
-  "Imprime o tabuleiro"
+  "Imprime no listener o estado do tabuleiro"
   (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro)))
 
 (defun mostrar-solucao (no)
-  "Gere a representação dos nós"
+  "Função que gere a impressão da informação dos nós no listener"
   (cond
    ((null no) nil)
    (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))))
 
 (defun mostrar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
-  "Função para gerir as funções que imprimem os resultados"
+  "Função que gere a impressão dos resultados e estatísticas"
   (progn
    (mostrar-algoritmo algoritmo profundidade-maxima)
    (mostrar-solucao (car resultado))
    (mostrar-estatisticas (cdr resultado) tempo-total)))
 
 (defun mostrar-estatisticas (estatisticas tempo-total)
+"Imprime no listener as estatisticas da execução do algoritmo"
   (progn
    (format t "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
    (format t "Factor de ramificação média: ~a" (first estatisticas))
@@ -234,6 +270,7 @@
    (format t "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%")))
 
 (defun mostrar-no (no)
+"Imprime no listener as informações do nó atual"
   (progn
    (format t "Profundidade: ~a ~%" (no-profundidade no))
    (mostrar-tabuleiro (first (no-estado no)))
@@ -242,6 +279,7 @@
    (terpri)))
 
 (defun tabuleiro-letras (tabuleiro)
+"Percorre o tabuleiro e troca os números por símbolos"
   (mapcar (lambda (row)
             (mapcar (lambda (cel)
                       (cond
@@ -264,37 +302,5 @@
     (do ((result nil (cons next result)) (next (read file nil 'eof) (read file nil 'eof)))
       ((equal next 'eof) (reverse result)))))
 
-(defun mostrar-tabuleiros (numero-tabuleiros &optional (i 1))
-  "Mostra o menu com os tabuleiros"
-  (if (zerop numero-tabuleiros)
-      (progn
-       (format t " ~%|         0 - Voltar                  |")
-       (format t " ~%|                                     |")
-       (format t " ~%|_____________________________________|")
-       (format t " ~%                                       ")
-       (format t " ~%-> Opção: "))
-      (progn
-       (cond
-        ((= i 1)
-         (progn
-          (format t " ~% _____________________________________")
-          (format t " ~%|                                     |")
-          (format t " ~%|           JOGO DO BLOKUS            |")
-          (format t " ~%|                                     |")
-          (format t " ~%|         Escolha o tabuleiro:        |")
-          (format t " ~%|                                     |"))) (t nil))
-       (format t " ~%|         ~a : Tabuleiro ~a             |" i i)
-       (mostrar-tabuleiros (1- numero-tabuleiros) (+ i 1)))))
 
-(defun menu-tabuleiros ()
-  (let ((problemas (ler-tabuleiros)))
-    (progn (mostrar-tabuleiros (length problemas))
-           (let ((option (read)))
-             (cond
-              ((eq option '0) (menu-inicial))
-              ((or (not (numberp option)) (> option (length problemas)))
-               (progn
-                (format t "Insira uma opção válida")
-                (menu-tabuleiros)))
-              (T (let ((problema (nth (1- option) problemas)))
-                   (menu-algoritmo (first problema) (second problema)))))))))
+
