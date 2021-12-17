@@ -1,314 +1,579 @@
-(defun mostrar-menu-inicial ()
-  (progn
-   (format t " ~% _____________________________________")
-   (format t " ~%|                                     |")
-   (format t " ~%|           JOGO DO BLOKUS            |")
-   (format t " ~%|                                     |")
-   (format t " ~%|              1 - Jogar              |")
-   (format t " ~%|              0 - Sair               |")
-   (format t " ~%|_____________________________________|")
-   (format t " ~%                                       ")
-   (format t " ~%-> Opção: ")))
+;;; Blockus
+;;; variaveis de teste e operadores
+
+(defun tabuleiro-vazio () 
+    '(
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+)
+
+(defun tabuleiro-problema () 
+    '(
+      (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
+      (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
+      (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
+      (0 0 0 0 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2)
+      (2 2 2 2 2 2 2 2 2 2 2 2 2 2))
+)
+
+(defun tabuleiro-teste () 
+    '(
+      (1 1 0 0 1 0 0 0 0 0 0 0 0 0)
+      (1 1 0 0 1 1 0 0 0 0 0 0 0 0)
+      (0 0 1 1 0 1 0 0 0 0 0 0 0 0)
+      (0 1 1 0 1 0 0 0 1 1 0 0 0 0)
+      (0 0 0 0 0 1 0 1 1 0 0 0 0 0)
+      (0 0 0 0 0 1 1 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 1 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      (0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+)
+
+(defun no-teste ()
+  "Define um no teste de Blockus em que o tabuleiro é vazio, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
+  (list (list (tabuleiro-teste) '(10 10 15)) 0 nil))
+
+(defun no-problema ()
+  "Define um no teste de Blockus em que o tabuleiro é o primeiro problema, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
+  (list (list (tabuleiro-problema) '(10 10 15)) 0 nil))
+
+(defun no-vazio ()
+  "Define um no teste de Blockus em que o tabuleiro é vazio, a mao tem a quantidade de pecas inicial, profundidade=0 e pai=NIL"
+  (list (list (tabuleiro-vazio) '(10 10 15)) 0 nil))
+
+(defun peca-c-h ()
+    "Peça C horizontal descrita como uma matriz 3x2 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
+    '(
+        (
+            (0 1 1)
+            (1 1 0)
+        )
+        (
+            ((sup-esq) (-1 0))
+            ((sup-dir inf-dir) (-2 0))
+            ((inf-dir) (-1 -1))
+            ((inf-esq sup-esq) (0 -1))
+        )
+    )
+)
+
+(defun peca-c-v ()
+    "Peça C vertical descrita como uma matriz 2x3 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
+    '(
+        (
+            (1 0)
+            (1 1)
+            (0 1)
+        )
+        (
+            ((sup-dir) (-1 -1))
+            ((inf-dir inf-esq) (-1 -2))
+            ((inf-esq) (0 -1))
+            ((sup-esq sup-dir) (0 0))
+        )
+    )
+)
+
+(defun peca-a ()
+    "Peça A descrita como uma matriz 1x1 e uma lista de 1 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
+    '(
+        (
+            (1)
+        )
+        (
+            ((sup-dir inf-dir inf-esq sup-esq) (0 0))
+        )
+    )
+)
+
+(defun peca-b ()
+    "Peça A descrita como uma matriz 1x1 e uma lista de 4 deslocações
+    cada deslocação é descrita com uma lista de direcões diagonais de contato e um offset em x e y
+    da forma da peça relativamente a posicao no tabuleiro"
+    '(
+        (
+            (1 1)
+            (1 1)
+        )
+        (
+            ((sup-dir) (-1 0))
+            ((inf-dir) (-1 -1))
+            ((inf-esq) (0 -1))
+            ((sup-esq) (0 0))
+        )
+    )
+)
+
+(defun operadores ()
+    "Devolve os simbolos relativos às 4 peças concretas do jogo"
+    (list 'peca-a  'peca-b 'peca-c-h 'peca-c-v)
+)
+
+;;; Métodos auxiliares
+
+(defun obter-vizinhanca (tabuleiro x y)
+    "Obtem uma matriz 3x3 que representa a vizinhança de uma célula no tabuleiro
+    Representa espaços fora do tabuleiro com o valor -1"
+    (labels (
+        (recursive (tabuleiro i)
+            (cond 
+                ((null tabuleiro) nil)
+                ((and (listp (car tabuleiro)) (> (abs (- i y)) 1)) (cons nil (recursive (cdr tabuleiro) (1+ i))))
+                ((and (listp (car tabuleiro)) (<= (abs (- i y)) 1)) (cons  (recursive (car tabuleiro) 0) (recursive (cdr tabuleiro) (1+ i))))
+                ((null (car tabuleiro)) nil)
+                (t 
+                    (cond
+                        ((<= (abs (- i x)) 1) (cons (car tabuleiro) (recursive (cdr tabuleiro) (1+ i))))
+                        (t (cons nil (recursive (cdr tabuleiro) (1+ i))))
+                    )
+                )
+            )
+        )
+    ) 
+    (let* 
+        (
+            (obtidos (mapcar (lambda (linha) (remove nil linha)) (remove nil (recursive tabuleiro 0) )))
+            (obtidos-colunas-corrigidas
+                (cond 
+                    ((= (length (car obtidos)) 2)
+                        (cond
+                            ((= x 0) (mapcar (lambda (linha)
+                                (cons -1 linha)
+                            ) obtidos))
+                            (t (mapcar (lambda (linha) 
+                                (append linha '(-1))
+                            ) obtidos))
+                        )
+                    )
+                    (t obtidos)
+                )
+            )
+            (obtidos-linhas-corrigidas
+                (cond
+                    ((= (length obtidos-colunas-corrigidas) 2) 
+                        (cond
+                            ((= y 0) (cons '(-1 -1 -1) obtidos-colunas-corrigidas))
+                            (t (append obtidos-colunas-corrigidas '((-1 -1 -1))))
+                        )
+                    )
+                    (t obtidos-colunas-corrigidas)
+                )
+            )
+        )
+        obtidos-linhas-corrigidas
+    )
+    ) 
+)
+
+(defun espacos-validos (tabuleiro)
+    "Procura espaços validos para jogar no tabuleiro
+    Devolve lista de listas com par de coordenadas e lista de direções diagonais de contacto
+    (sup-esq, sup-dir, inf-esq, inf-dir)"
+    (labels
+        (
+            (recursive (_tabuleiro x y)
+                (cond
+                    ((null _tabuleiro) nil)
+                    ((listp (car _tabuleiro)) (append  (recursive (car _tabuleiro) 0 y) (recursive (cdr _tabuleiro) 0 (1+ y))))
+                    ((null (car _tabuleiro)) nil)
+                    (t 
+                        (cond 
+                            ((/= (car _tabuleiro) 0) (append nil (recursive (cdr _tabuleiro) (1+ x) y)))
+                            (t 
+                                (let*
+                                    (
+                                        (vizinhanca (obter-vizinhanca tabuleiro x y))
+                                        ;; Verificar se não existem peças colocadas nas laterais
+                                        ;; e existe pelo menos uma peça nas diagonais
+                                        (decisao (and 
+                                            (not (or 
+                                                (= (second (first vizinhanca)) 1)
+                                                (= (first (second vizinhanca)) 1)
+                                                (= (third (second vizinhanca)) 1)
+                                                (= (second (third vizinhanca)) 1)
+                                                ))
+                                            (or
+                                                (= (first (first vizinhanca)) 1)
+                                                (= (third (first vizinhanca)) 1)
+                                                (= (first (third vizinhanca)) 1)
+                                                (= (third (third vizinhanca)) 1)
+                                            )
+                                            ))
+                                        (direcoes-de-contato
+                                            (remove nil (cons (if (= (first (first vizinhanca)) 1) 'sup-esq nil) 
+                                                (cons (if (= (third (first vizinhanca)) 1) 'sup-dir nil) 
+                                                    (cons (if (= (first (third vizinhanca)) 1) 'inf-esq nil) 
+                                                        (cons (if (= (third (third vizinhanca)) 1) 'inf-dir nil) nil)))))
+                                        )
+                                    ) 
+                                    (append (if decisao (list (list (list x y) direcoes-de-contato)) nil) (recursive (cdr _tabuleiro) (1+ x) y))
+                                )
+                            )
+                        )
+                    
+                    )
+                )
+            )
+        )
+        (cond
+            ((tabuleiro-vaziop tabuleiro) '(((0 0) (sup-esq))))
+            (t (recursive tabuleiro 0 0))
+        )
+        
+    )
+)
+
+(defun tabuleiro-vaziop (tabuleiro)
+    "Função que avlia se um tabuleiro fornecido não tem peças colocadas"
+    (cond
+        ((null tabuleiro) t)
+        ((listp (car tabuleiro)) (and (tabuleiro-vaziop (car tabuleiro)) (tabuleiro-vaziop (cdr tabuleiro))))
+        ((/= (car tabuleiro) 1) (and t (tabuleiro-vaziop (cdr tabuleiro))))
+        (t nil)
+    )
+)
+
+(defun deslocacoes-peca (peca)
+    "Obtem a lista de deslocações (offsets) da peça relativamente aos pontos de contacto"
+    (car (cdr peca))
+)
+
+(defun eliminar-duplicados (L)
+    "Elimina elementos duplicados numa lista L"
+  (cond ((null L) L)
+        ((member (car L) (cdr L) :test #'equal)
+         (eliminar-duplicados (cdr L)))
+        (t (cons (car L) (eliminar-duplicados (cdr L))))))
+
+(defun potenciais-colocacoes-com-peca ( posicoes peca)
+    "Obtem uma lista de potenciais colocações da peça no tabuleiro
+    que deve ainda ser testada na prática"
+    (eliminar-duplicados (apply #'append (mapcar (lambda (posicao)
+             (remove nil (potenciais-colocacoes  posicao (deslocacoes-peca peca)))
+        )
+     posicoes)))
+)
+
+(defun potenciais-colocacoes (posicao deslocacoes)
+    "Devolve a resolução em colocações concretas da peça ao comparar a lista de deslocacoes da peça
+    com os contatos da posicao recebida."
+    (cond
+        ((null deslocacoes) nil)
+        ((lista-contem-todos (first (car deslocacoes)) (second posicao)) (let 
+            (
+                (x (+ (first (first posicao)) (first (second (car deslocacoes)))))
+                (y (+ (second (first posicao)) (second (second (car deslocacoes)))))
+            )
+            (cond
+                ((or (< x 0) (< y 0)) (cons nil (potenciais-colocacoes posicao (cdr deslocacoes))))
+                (t (cons (list x y) (potenciais-colocacoes posicao (cdr deslocacoes))))
+            )
+        ))
+        (t (cons nil (potenciais-colocacoes posicao (cdr deslocacoes))))
+    )
+)
+
+(defun lista-contem-todos (lista elementos)
+    "Verifica se a lista recebida contém todos os elementos"
+    (cond
+        ((null elementos) t)
+        ((member (car elementos) lista) (and t (lista-contem-todos  lista (cdr elementos))))
+        (t nil)
+    )
+)
+
+(defun potenciais-colocacoes-por-peca (estado operadores)
+    "Obtém todas as potenciais colocações por peça no tabuleiro considerando as peças restantes na mão.
+    Todas as colocações devolvidas devem primeiro ser testadas em prática.
+    Devolve lista de listas com operador e uma lista de potencias colocações em listas de coordenas x y."
+    (let
+        (
+            (posicoes-validas (espacos-validos (first estado)))
+        )
+        (mapcar (lambda (operador)
+            (cond
+                ((tem-peca operador (second estado)) (list operador (potenciais-colocacoes-com-peca posicoes-validas (funcall operador))))
+                (t nil)            
+            )
+            
+        ) operadores)
+    )
+)
+
+(defun tem-peca (peca mao)
+    "Valida se uma peça existe na mão do jogador"
+    (cond
+        ((equal peca 'peca-a) (> (first mao) 0))
+        ((equal peca 'peca-b) (> (second mao) 0))
+        ((or (equal peca 'peca-c-h) (equal peca 'peca-c-v)) (> (third mao) 0))
+        (t nil)
+    )
+)
 
 
-;; Seleção do algoritmo
-(defun mostrar-selecionar-algoritmo ()
-  (progn
-   (format t " ~% _____________________________________")
-   (format t " ~%|                                     |")
-   (format t " ~%|           JOGO DO BLOKUS            |")
-   (format t " ~%|                                     |")
-   (format t " ~%|       Escolha o algoritmo:          |")
-   (format t " ~%|                                     |")
-   (format t " ~%|       1 - Breadth-First Search      |")
-   (format t " ~%|       2 - Depth-First Search        |")
-   (format t " ~%|       3 - A*                        |")
-   (format t " ~%|       0 - Voltar                    |")
-   (format t " ~%|                                     |")
-   (format t " ~%|_____________________________________|")
-   (format t " ~%                                       ")
-   (format t " ~%-> Opção: ")))
-
-(defun mostrar-selecionar-heuristica ()
-  (progn
-   (format t " ~% _____________________________________")
-   (format t " ~%|                                     |")
-   (format t " ~%|           JOGO DO BLOKUS            |")
-   (format t " ~%|                                     |")
-   (format t " ~%|       Escolha a heuristica          |")
-   (format t " ~%|                                     |")
-   (format t " ~%|       1 - Heuristica base           |")
-   (format t " ~%|       2 - Heuristica original       |")
-   (format t " ~%|       0 - Voltar                    |")
-   (format t " ~%|                                     |")
-   (format t " ~%|_____________________________________|")
-   (format t " ~%                                       ")
-   (format t " ~%-> Opção: ")))
-
-(defun mostrar-limite-profundidade ()
-  (progn
-   (format t " ~% _____________________________________")
-   (format t " ~%|                                     |")
-   (format t " ~%|           JOGO DO BLOKUS            |")
-   (format t " ~%|                                     |")
-   (format t " ~%|    Qual o limite de profundidade    |")
-   (format t " ~%|                                     |")
-   (format t " ~%|     > 0 - nível de profundidade     |")
-   (format t " ~%|       0 - Voltar                    |")
-   (format t " ~%|                                     |")
-   (format t " ~%|_____________________________________|")
-   (format t " ~%                                       ")
-   (format t " ~%-> Opção: ")))
-
-(defun definir-pasta ()
-  (progn
-   (format t "Escreva o path da localizacao do projeto entre aspas~%")
-   (format t "Exemplo: ''C:/Users/username/Desktop/''~%")
-   (let ((path (read)))
-     (load (compile-file (concatenate 'string path "puzzle.lisp")))
-     (load (compile-file (concatenate 'string path "procura.lisp")))
-     (defparameter *path* path)
-     path)))
-
-(defun menu-limite-profundidade (minimo-casas-preencher tabuleiro)
-  (progn (mostrar-limite-profundidade)
-         (let ((option (read)))
-           (cond
-            ((or (not (numberp option)) (< option 0)) (format t "Opção inválida!") (menu-limite-profundidade minimo-casas-preencher tabuleiro))
-            ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
-            (T (efetuar-procura 'dfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher) option))))))
-
-(defun iniciar ()
-  (progn
-   (definir-pasta)
-   (menu-inicial)))
-;; menu-inicial do jogo
-(defun menu-inicial ()
-  (progn
-   (mostrar-menu-inicial)
-   (let ((option (read)))
-     (cond
-      ((eq option '1) (menu-tabuleiros))
-      ((eq option '0) (format t "Até à próxima!"))
-      (T (progn (format t "Opção inválida!") (menu-inicial)))))))
-
-;; Corre os algoritmos
-(defun menu-algoritmo (minimo-casas-preencher tabuleiro)
-  (progn (mostrar-selecionar-algoritmo)
-         (let ((option (read)))
-           (cond
-            ((eq option '1)
-             (efetuar-procura 'bfs tabuleiro (criar-funcao-objetivo minimo-casas-preencher)))
-            ((eq option '2)
-             (menu-limite-profundidade minimo-casas-preencher tabuleiro))
-            ((eq option '3)
-             (menu-heuristica tabuleiro minimo-casas-preencher))
-            ((eq option '0) (menu-tabuleiros))
-            (T (progn (format t "Opção inválida!") (menu-algoritmo minimo-casas-preencher tabuleiro)))))))
-
-(defun menu-heuristica (tabuleiro minimo-casas-preencher)
-  (progn (mostrar-selecionar-heuristica)
-         (let ((option (read)))
-           (cond
-            ((eq option '1) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil (criar-funcao-heuristica-base minimo-casas-preencher)))
-            ((eq option '2) (efetuar-procura 'a* tabuleiro (criar-funcao-objetivo minimo-casas-preencher) nil 'heuristica-original))
-            ((eq option '0) (menu-algoritmo minimo-casas-preencher tabuleiro))
-            (T (progn (format t "Opção inválida!") (menu-inicial)))))))
-
-(defun efetuar-procura (algoritmo tabuleiro objetivo &optional profundidade-maxima funcao-heuristica)
-  (let* ((tempo-inicio (tempo-atual))
-         (no (criar-no-inicial-blockus tabuleiro))
-         (resultado (cond
-                     ((eq algoritmo 'bfs) (bfs no objetivo 'sucessores (operadores)))
-                     ((eq algoritmo 'dfs) (dfs no objetivo 'sucessores (operadores) profundidade-maxima))
-                     ((eq algoritmo 'a*) (a* no objetivo 'sucessores (operadores) funcao-heuristica))))
-         (tempo-final (tempo-atual))
-         (tempo-total (diferenca-tempo tempo-inicio tempo-final)))
-    (progn
-      (cond
-        ((null resultado) nil)
-        (t (mostrar-resultado resultado tempo-total algoritmo profundidade-maxima)
-            (registar-resultado resultado tempo-total algoritmo profundidade-maxima))
+(defun peca-casas-ocupadas (x y peca)
+    "Retorna uma lista de listas de coordenas que são as casa ocupadas concretamente de jogar
+    a peça nas posições x y"
+  (labels
+    (
+      (recursivo (matriz-peca i j)
+        (cond
+          ((null (car matriz-peca)) nil)
+          ((listp (car matriz-peca)) (append (recursivo (car matriz-peca) 0 j) (recursivo (cdr matriz-peca) 0 (1+ j))))
+          (t 
+            (cond
+              ((= (car matriz-peca) 1) (cons (list (+ x i) (+ y j)) (recursivo (cdr matriz-peca) (1+ i) j)))
+              (t (cons nil (recursivo (cdr matriz-peca) (1+ i) j)))
+            )
+          )
+        )
       )
-     (menu-inicial))))
+    )
+    (remove nil (recursivo (first peca) 0 0))
+  )
+)
 
-(defun registar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
-  (progn
-   (registar-algoritmo algoritmo profundidade-maxima)
-   (registar-solucao (car resultado))
-   (registar-estatisticas (cdr resultado) tempo-total)))
+(defun celula (row col tabuleiro)
+    "Retorna uma celula na linha e coluna do tabuleiro"
+  (nth col (nth row tabuleiro)))
 
-(defun registar-algoritmo (algoritmo &optional profundida-maxima)
-  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-    (progn
-     (format file "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
-     (cond
-      ((equal algoritmo 'dfs)
-       (format file "Algoritmo utilizado: ~a (~a níveis de profundidade) ~% ~%" algoritmo profundida-maxima))
-      (t (format file "Algoritmo utilizado: ~a ~% ~%" algoritmo))))))
+(defun substituir-posicao (idx line &optional (value 1))
+    "Substitui a célula na posição idx da linha recebida pelo valor"
+  (labels ((recursive (current)
+              (cond ((null (nth current line)) nil)
+                    ((= current idx) (cons value (recursive (1+ current))))
+                    (t (cons (nth current line) (recursive (1+ current)))))))
+    (recursive 0))
+)
 
-(defun mostrar-algoritmo (algoritmo &optional profundida-maxima)
-  (progn
-   (format t "- --/-/-/-/-/R E S U L T A D O/-/-/-/-/-/-/-/-- - ~% ~%")
-   (cond
-    ((equal algoritmo 'dfs)
-     (format t "Algoritmo utilizado: ~a (~a níveis de profundidade) ~% ~%" algoritmo profundida-maxima))
-    (t (format t "Algoritmo utilizado: ~a ~% ~%" algoritmo)))))
+(defun substituir (row col tabuleiro &optional (value 1))
+    "Substitui a célula na posição row col recebida pelo valor"
+  (labels ((recursive (current)
+              (cond ((null (nth current tabuleiro)) nil)
+                    ((= current row) (cons (substituir-posicao col (nth current tabuleiro) value) (recursive (1+ current))))
+                    (t (cons (nth current tabuleiro) (recursive (1+ current)))))))
+    (recursive 0))
+)
 
-(defun registar-solucao (no)
+(defun valida-casas (tabuleiro casas)
+    "Valida se é possível jogar no tabuleiro nas casas"
+    (cond
+        ((null casas) t)
+        ((or (> (first (car casas)) 13) (> (second (car casas)) 13)
+            (< (first (car casas)) 0) (< (second (car casas)) 0)
+        ) nil)
+        (t 
+            (let ((vizinhanca (obter-vizinhanca tabuleiro (first (car casas)) (second (car casas)))))
+                (and
+                    (and (= (second (second vizinhanca)) 0)
+                        (not (or 
+                            (= (second (first vizinhanca)) 1)
+                            (= (first (second vizinhanca)) 1)
+                            (= (third (second vizinhanca)) 1)
+                            (= (second (third vizinhanca)) 1)
+                        ))
+                    )
+                (valida-casas tabuleiro (cdr casas)) )
+            )
+        )
+    )
+)
+
+(defun list-0-to-n (n)
+    "Devolve uma lista de 0 a n"
+    (cond 
+        ((< n 0) nil)
+        (t (append (list-0-to-n (1- n)) (list n))) 
+    )
+)
+
+(defun remove-from-list (l index &optional (i 0))
+  "Remove da lista l o elemento de indice index, devolvendo uma lista de dimensão (1- (length l))"
+    (cond 
+        ((= i index) (cdr l))
+        (t (cons (car l) (remove-from-list (cdr l) index (1+ i))))
+    )
+)
+
+(defun shuffle-list (l &optional (shuffled-list nil) (indexes nil) (init nil))
+    "Baralha a lista l aleatóriamente"
+    (cond
+        ((null init) (shuffle-list l shuffled-list (list-0-to-n (1- (length l))) t ))
+        ((null indexes) shuffled-list)
+        (t
+            (let* ((random-n (random (length indexes)))
+                    (random-index (nth random-n indexes)))
+
+                (shuffle-list l (cons (nth random-index l) shuffled-list) (remove-from-list indexes random-n) init)        
+            ) 
+        )
+    )
+)
+
+(defun sucessores (no operadores)
+    "Com base no nó e nos operadores disponíveis, devolve uma lista de sucessores válidos"
+    (shuffle-list (apply #'append (mapcar (lambda (peca-colocacoes)  
+        (remove nil (mapcar (lambda (colocacao)
+            (let ((casas-ocupadas (peca-casas-ocupadas (first colocacao) (second colocacao) (funcall (first peca-colocacoes)))))
+                (cond 
+                    ((valida-casas (first (no-estado no)) casas-ocupadas)
+                        (list
+                            (list
+                                (ocupar-casas (first (no-estado no)) casas-ocupadas)
+                                (atualizar-mao (second (no-estado no)) (first peca-colocacoes)))
+                            (1+ (no-profundidade no))
+                            no))
+                    (t nil)
+                )
+            )
+        ) (second peca-colocacoes)))
+    ) (potenciais-colocacoes-por-peca (no-estado no) operadores ))))
+)
+
+(defun ha-jogadas-validas (no)
+    "Verifica se é possível colocar mais alguma peça das disponiveis no tabuleiro"
+    (eval (cons 'or  (apply #'append (mapcar (lambda (peca-colocacoes)  
+        (mapcar (lambda (colocacao)
+            (let ((casas-ocupadas (peca-casas-ocupadas (first colocacao) (second colocacao) (funcall (first peca-colocacoes)))))
+                (valida-casas (first (no-estado no)) casas-ocupadas)
+                ;;casas-ocupadas
+            )
+        ) (second peca-colocacoes))
+    ) (potenciais-colocacoes-por-peca (no-estado no) (operadores) )))))
+)
+
+(defun atualizar-mao (mao peca-jogada)
+    "Devolve uma nova mão sem a peça jogada"
+    (cond
+        ((equal peca-jogada 'peca-a) (list (1- (first mao)) (second mao) (third mao)))
+        ((equal peca-jogada 'peca-b) (list (first mao) (1- (second mao)) (third mao)))
+        ((or (equal peca-jogada 'peca-c-h) (equal peca-jogada 'peca-c-v)) (list (first mao) (second mao) (1- (third mao))))
+    )
+)
+
+
+(defun ocupar-casas (tabuleiro casas)
+    "Imprime a peça sobre o tabuleiro, devolvendo um novo tabuleiro"
+    (cond
+        ((null casas) tabuleiro)
+        (t (ocupar-casas (substituir (second (car casas)) (first (car casas)) tabuleiro 1) (cdr casas)))
+    )
+)
+
+
+;;; Construtores
+
+(defun criar-no-inicial-blockus (tabuleiro)
+    "Recebe um tabuleiro/problema e constroi um nó inicial com uma mão de 35 peças de 3 tipos, profundidade 0
+    e pai nil"
+  (list (list tabuleiro '(10 10 15)) 0 nil))
+
+
+;;; Funcoes auxiliares da procura
+
+
+(defun no-solucaop (no minimo-casas-preenchidas)
+  "Determina se um nó é solução"
   (cond
-   ((null no) nil)
-   (t (progn (registar-solucao (no-pai no)) (registar-no no)))))
+    ((>= (contar-casas-preenchidas (first (no-estado no))) minimo-casas-preenchidas)
+        (cond
+            ((= (apply #'+ (second (no-estado no))) 0) t)
+            ((not (ha-jogadas-validas no)) t)
+            (t nil)))
+    (t nil)
+  )
+)
 
-(defun registar-tabuleiro (tabuleiro)
-  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-    (format file "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro))))
+(defun criar-funcao-objetivo (minimo-casas-preenchidas)
+    "Constroi e devolve uma função lambda objetivo. Permite variar o número minimo de casas preenchidas."
+    (lambda (no) (funcall #'no-solucaop no minimo-casas-preenchidas))
+)
 
-(defun registar-no (no)
-  (progn
-   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-     (format file "Profundidade: ~a ~%" (no-profundidade no)))
-   (registar-tabuleiro (first (no-estado no)))
-   (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-     (format file "Peças disponiveis: ~a ~% ~%" (second (no-estado no))))))
+(defun criar-funcao-heuristica-base (minimo-casas-a-preencher)
+    "Constroi e devolve uma função lambda heuristica base. Permite variar o número minimo de casas preenchidas."
+    (lambda (estado) (funcall #'heuristica-base estado minimo-casas-a-preencher))
+)
 
-(defun registar-estatisticas (estatisticas tempo-total)
-  (with-open-file (file (diretorio-resultados) :direction :output :if-exists :append :if-does-not-exist :create)
-    (progn
-     (format file "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
-     (format file "Factor de ramificação média: ~a ~%" (first estatisticas))
-     (format file "Número de nós gerados: ~a ~%" (second estatisticas))
-     (format file "Número de nós expandidos: ~a ~%" (third estatisticas))
-     (format file "Penetrância: ~a ~%" (fourth estatisticas))
-     (format file "Tempo de execução em segundos: ~a ~%" tempo-total)
-     (format file "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%"))))
+(defun heuristica-base (estado minimo-casas-a-preencher)
+    "Função heuristica base definida como o numero de casas restantes para alcançar o minimo de casas
+    preenchidas especificadas pelo problema"
+    (- minimo-casas-a-preencher (contar-casas-preenchidas (first estado)))
+)
 
-(defun diferenca-tempo (tempo-inicial tempo-final)
-  (let* ((tempo-inicial-segundos (+ (* (first tempo-inicial) 3600) (* (second tempo-inicial) 60) (third tempo-inicial)))
-         (tempo-final-segundos (+ (* (first tempo-final) 3600) (* (second tempo-final) 60) (third tempo-final))))
-    (- tempo-final-segundos tempo-inicial-segundos)))
+(defun heuristica-original (estado)
+    "Função heuristica original definida como o numero de casas vazias que conectam lateralmente com
+    outras casas vazias"
+    (contar-casas-vazias-nao-sozinhas (first estado))
+)
 
-(defun mostrar-tabuleiro (tabuleiro)
-  (format t "~{~{~a~^ ~}~%~}" (tabuleiro-letras tabuleiro)))
+(defun contar-casas-vazias-nao-sozinhas (tabuleiro)
+    "Devolve o numero de casas no tabuleiro vazias que conectam lateralmente com outras casas vazias"
+    (labels
+        ((recursivo (x y) 
+            (cond
+                ((> y 13) 0)
+                ((< x 14) (cond ((= (celula y x tabuleiro) 0)
+                    (let ((vizinhanca (obter-vizinhanca tabuleiro x y)))
+                        (if (or 
+                                (= (second (first vizinhanca)) 0)
+                                (= (first (second vizinhanca)) 0)
+                                (= (third (second vizinhanca)) 0)
+                                (= (second (third vizinhanca)) 0))
+                            (+ 1 (recursivo (1+ x) y))
+                            (recursivo (1+ x) y)
+                        )
+                    )) (t (recursivo (1+ x) y))
+                ))
+                (t (recursivo 0 (1+ y)))
+            )
+        ))
+        (recursivo 0 0)
+    )
+)
 
-(defun mostrar-solucao (no)
-  (cond
-   ((null no) nil)
-   (t (progn (mostrar-solucao (no-pai no)) (mostrar-no no)))))
-
-(defun mostrar-resultado (resultado tempo-total algoritmo &optional profundidade-maxima)
-  (progn
-   (mostrar-algoritmo algoritmo profundidade-maxima)
-   (mostrar-solucao (car resultado))
-   (mostrar-estatisticas (cdr resultado) tempo-total)))
-
-(defun mostrar-estatisticas (estatisticas tempo-total)
-  (progn
-   (format t "- --/-/-/-/-/E S T A T I S T I C A S/-/-/-/-/-- - ~%")
-   (format t "Factor de ramificação média: ~a" (first estatisticas))
-   (terpri)
-   (format t "Número de nós gerados: ~a" (second estatisticas))
-   (terpri)
-   (format t "Número de nós expandidos: ~a" (third estatisticas))
-   (terpri)
-   (format t "Penetrância: ~a" (fourth estatisticas))
-   (terpri)
-   (format t "Tempo de execução em segundos: ~a" tempo-total)
-   (terpri)
-   (format t "- --/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-- - ~% ~%")))
-
-(defun mostrar-no (no)
-  (progn
-   (format t "Profundidade: ~a ~%" (no-profundidade no))
-   (mostrar-tabuleiro (first (no-estado no)))
-   (format t "Peças disponiveis: ~a" (second (no-estado no)))
-   (terpri)
-   (terpri)))
-
-(defun tabuleiro-letras (tabuleiro)
-  (mapcar (lambda (row)
-            (mapcar (lambda (cel)
-                      (cond
-                       ((= cel 2) ":")
-                       ((= cel 1) "#")
-                       (t "_"))) row)) tabuleiro))
-
-
-
-;; Devolve o path para o ficheiro problemas.dat
-(defun diretorio-problemas ()
-  ; (make-pathname :host "c" :directory '(:absolute "lisp") :name "problemas" :type "dat")
-  (concatenate 'string *path* "problemas.dat"))
-
-(defun diretorio-resultados ()
-  (concatenate 'string *path* "resultados.dat"))
-
-; Retorna os tabuleiros do ficheiro problemas.dat
-(defun ler-tabuleiros ()
-  (with-open-file (file (diretorio-problemas) :if-does-not-exist nil)
-    (do ((result nil (cons next result)) (next (read file nil 'eof) (read file nil 'eof)))
-      ((equal next 'eof) (reverse result)))))
-
-; (defun ler-tabuleiros ()
-;   '((8 ((0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (0 0 0 0 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (20 ((0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (0 0 0 0 0 0 0 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (28 ((0 0 2 0 0 0 0 0 0 2 2 2 2 2) (0 0 0 2 0 0 0 0 0 2 2 2 2 2) (0 0 0 0 2 0 0 0 0 2 2 2 2 2) (0 0 0 0 0 2 0 0 0 2 2 2 2 2) (0 0 0 0 0 0 2 0 0 2 2 2 2 2) (0 0 0 0 0 0 0 2 0 2 2 2 2 2) (0 0 0 0 0 0 0 0 2 2 2 2 2 2) (0 0 0 0 0 0 0 0 0 2 2 2 2 2) (0 0 0 0 0 0 0 0 0 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (36 ((0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (44 ((0 2 2 2 2 2 2 2 2 2 2 2 2 2) (2 0 2 0 0 0 0 0 0 2 0 0 0 2) (2 0 0 2 0 0 0 0 0 0 2 0 0 2) (2 0 0 0 2 0 0 0 0 0 0 2 0 2) (2 0 0 0 0 2 0 0 0 0 0 0 2 2) (2 0 0 0 0 0 2 0 0 0 0 0 0 2) (2 0 0 0 0 0 0 2 0 0 0 0 0 2) (2 0 0 0 0 0 0 0 2 0 0 0 0 2) (2 0 0 0 0 0 0 0 0 2 0 0 0 2) (2 0 2 0 0 0 0 0 0 0 2 0 0 2) (2 2 0 0 0 0 0 0 0 0 0 2 0 2) (2 0 0 0 2 0 0 0 0 0 0 0 2 2) (2 0 0 0 0 2 0 0 0 0 0 0 0 2) (2 2 2 2 2 2 2 2 2 2 2 2 2 2))) (72 ((0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0) (0 0 0 0 0 0 0 0 0 0 0 0 0 0)))))
-
-;; Mostra o menu com os tabuleiros 
-(defun mostrar-tabuleiros (numero-tabuleiros &optional (i 1))
-  (if (zerop numero-tabuleiros)
-      (progn
-       (format t " ~%|         0 - Voltar                  |")
-       (format t " ~%|                                     |")
-       (format t " ~%|_____________________________________|")
-       (format t " ~%                                       ")
-       (format t " ~%-> Opção: "))
-      (progn
-       (cond
-        ((= i 1)
-         (progn
-          (format t " ~% _____________________________________")
-          (format t " ~%|                                     |")
-          (format t " ~%|           JOGO DO BLOKUS            |")
-          (format t " ~%|                                     |")
-          (format t " ~%|         Escolha o tabuleiro:        |")
-          (format t " ~%|                                     |"))) (t nil))
-       (format t " ~%|         ~a : Tabuleiro ~a             |" i i)
-       (mostrar-tabuleiros (1- numero-tabuleiros) (+ i 1)))))
-
-(defun menu-tabuleiros ()
-  (let ((problemas (ler-tabuleiros)))
-    (progn (mostrar-tabuleiros (length problemas))
-           (let ((option (read)))
-             (cond
-              ((eq option '0) (menu-inicial))
-              ((or (not (numberp option)) (> option (length problemas)))
-               (progn
-                (format t "Insira uma opção válida")
-                (menu-tabuleiros)))
-              (T (let ((problema (nth (1- option) problemas)))
-                   (menu-algoritmo (first problema) (second problema)))))))))
-
-; (defun escrever-ficheiro-resultados (sol)
-;   (let* ((tempo-inicial (car sol))
-;          (alg-solucao (car (cdr sol)))
-;          (tempo-fim (car (cdr (cdr sol))))
-;          (alg (car (cdr (cdr (cdr sol)))))
-;          (moves (car (cdr (cdr (cdr (cdr (cdr sol)))))))
-;          (goal (car (cdr (cdr (cdr (cdr (cdr sol))))))))
-;     (with-open-file (file (directory-resultados-file) :direction :output :if-exists :append :if-does-not-exist :create)
-;       (progn
-;        (format file "~%* ------------------------- *")
-;        (format file "~%~t> Algoritmo escolhido: ~a " alg)
-;        (format file "~%~t> Hora de Início: ~a:~a:~a" (car tempo-inicial) (car (cdr tempo-inicial)) (car (cdr (cdr tempo-inicial))))
-;        (format file "~%~t> Hora de Fim: ~a:~a:~a" (car tempo-fim) (car (cdr tempo-fim)) (car (cdr (cdr tempo-fim))))
-;        (format file "~%~t> Número de nós gerados: ~a" (+ (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao)))))
-;        (format file "~%~t> Número de nós expandidos: ~a" (car (cdr (cdr alg-solucao))))
-;        (format file "~%~t> Profundidade máxima: ~a" moves)
-;        (format file "~%~t> Objetivo pretendido: ~a" goal)
-;        (format file "~%~t> Penetrância: ~F" (penetrancia alg-solucao))
-;        (format file "~%~t> Pontos totais: ~a" (no-g (car alg-solucao)))
-;        (display-jogadas (car alg-solucao) (car (cdr alg-solucao)) (car (cdr (cdr alg-solucao))))))))
-
-(defun tempo-atual ()
-  "Retorna o tempo atual com o formato (h m s)"
-  (multiple-value-bind (s m h) (get-decoded-time)
-    (list h m s)))
+(defun contar-casas-preenchidas (tabuleiro)
+    "Devolve o numro de casas preenchidas pelo jogador no tabuleiro"
+    (cond 
+        ((null tabuleiro) 0)
+        ((listp (car tabuleiro)) (+ (contar-casas-preenchidas (car tabuleiro))
+                                    (contar-casas-preenchidas (cdr tabuleiro))))
+        (t
+            (cond 
+                ((= (car tabuleiro) 1) (+ 1 (contar-casas-preenchidas (cdr tabuleiro))))
+                (t (contar-casas-preenchidas(cdr tabuleiro)))
+            )
+        )
+    )
+)

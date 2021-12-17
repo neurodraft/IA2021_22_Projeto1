@@ -312,6 +312,15 @@
 
 
 (defun a* (no objetivo sucessores operadores heuristica)
+  "Algoritmo de procura informado implementado recursivamente
+  Recebe um nó inicial, uma função de avaliação de nó objetivo,
+  uma função geradoradora de nós sucessores, uma lista de operadores fornecidos a esta
+  e uma função heuristica
+  
+  Um nó é definido como uma lista composta por estado, profundidade e nó pai.
+  A função objetivo deverá receber exclusivamente um nó.
+  A função sucessores deverá receber exclusivamente um nó e uma lista de operadores
+  A profundidade máxima deverá ser um numero inteiro > 0"
   (labels ((recursivo (abertos fechados f-abertos f-fechados &optional (numero-nos-gerados 0) (numero-nos-expandidos 1))
               (cond
                ((null abertos) nil)
@@ -346,31 +355,6 @@
                        (+ numero-nos-expandidos 1))))))))))
 
     (recursivo (list no) '() '(0) '())))
-
-; (defun no-pertence-a-subarvore (no raiz)
-;               (cond
-;                ((null no) nil)
-;                ((equal (no-pai no) raiz) t)
-;                (t (pertence-a-subarvore (no-pai no) raiz))))
-
-; (defun no-substituir-parentesco (no antecedente-anterior antecedente-novo)
-;   (flet
-;     ((substituir-parentesco (parentesco)
-;       (cond
-;         ((null parentesco) nil)
-;         ((equal (car parentesco) antedente-anterior) ())
-;       )
-;     ))
-;   )
-
-; )
-
-; (replace-parent-recursively (ls old-parent new-parent &optional new-list replaced)
-;   (cond
-;     ((and (null new-list)) nil )
-;     (())
-;   )
-; )
 
 (defun avaliar-nos (nos heuristica)
   "Devolve uma lista de avaliações f com base numa lista de nos e uma funcao heuristica
